@@ -1,0 +1,96 @@
+﻿<Window x:Class="CoursLoadAccounting.DataGrid"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CoursLoadAccounting"
+        mc:Ignorable="d"
+        Title="DataGrid" Height="550" Width="850"
+        WindowStartupLocation="CenterScreen" FontSize="14" MinWidth="850" MinHeight="550">
+    <Window.Resources>
+        <Style x:Key="CustomColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#FFDED1B5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Border BorderBrush="#FF372B2B" BorderThickness="0,0,1,0">
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FFEDE6D7">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="0.2*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <DataGrid x:Name="TableDB" Grid.Column="1" Grid.Row="1" 
+                  Grid.ColumnSpan="3" Grid.RowSpan="3"
+                  CanUserSortColumns="False" CanUserResizeColumns="False" 
+                  IsReadOnly="True" CanUserResizeRows="False"
+                  CanUserAddRows="False"
+                  AutoGenerateColumns="True" ItemsSource="{Binding}"
+                  BorderBrush="#FFEDE6D7" ColumnHeaderStyle="{StaticResource CustomColumnHeaderStyle}" 
+                  Background="#FFF1EEE5" FontSize="14"              
+                  />
+
+        <ComboBox x:Name="SelectTable" Grid.Row="1" Grid.Column="5" 
+                 Height="25" VerticalAlignment="Top"
+                 HorizontalAlignment="Stretch" SelectionChanged="SelectTable_SelectionChanged"
+                 SelectedIndex="0">
+            <ComboBoxItem>Учет нагрузки</ComboBoxItem>
+            <ComboBoxItem>Орг. структура</ComboBoxItem>
+            <ComboBoxItem>Факультеты</ComboBoxItem>
+            <ComboBoxItem>Руководители</ComboBoxItem>
+            <ComboBoxItem>Дисциплины</ComboBoxItem>
+            <ComboBoxItem>Специальности</ComboBoxItem>
+        </ComboBox>
+
+        <TextBlock Text="Поиск"  Grid.Row="1" Grid.Column="5"
+               HorizontalAlignment="Center" VerticalAlignment="Bottom"
+               Height="52" FontSize="16"  />
+        
+        <TextBox x:Name="Search" Grid.Row="1" Grid.Column="5"
+                 Height="25"  VerticalAlignment="Bottom"
+                 HorizontalAlignment="Stretch"
+                 />
+        <Button x:Name="SearchButton" Grid.Row="1" Grid.Column="6"
+                Height="25" Width="25"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Click="SearchButton_Click">
+            <Button.Background>
+                <ImageBrush ImageSource="/Search.png"/>
+            </Button.Background>
+        </Button>
+
+        <Button Grid.Column="5" Grid.Row="2" Height="45" Width="90" 
+                HorizontalAlignment="Left"
+                x:Name="AddButtom" Content="Добавить"/>
+        
+        <Button Grid.Column="5" Grid.Row="2" Height="45" Width="90" 
+                HorizontalAlignment="Right"
+                x:Name="DeleteButtom" Content="Удалить"/>
+        
+    </Grid>
+</Window>
