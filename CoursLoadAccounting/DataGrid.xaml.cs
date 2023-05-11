@@ -51,5 +51,21 @@ namespace CoursLoadAccounting
 
             databaseUniversity.Close();
         }
+
+        private void AddButtom_Click(object sender, RoutedEventArgs e)
+        {
+            
+            
+            AddMember addMember = new AddMember(SelectTable.SelectedIndex, databaseUniversity);
+            addMember.ShowDialog();
+            addMember.Owner = this;
+
+            databaseUniversity.Open();
+
+            TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
+
+            databaseUniversity.Close();
+
+        }
     }
 }
