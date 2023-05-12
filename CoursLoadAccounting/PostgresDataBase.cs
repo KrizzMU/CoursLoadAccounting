@@ -43,6 +43,12 @@ namespace CoursLoadAccounting
             return conn.State == ConnectionState.Open;
         }
 
+        public object ExecuteScalar(string sqlCommand)
+        {
+            NpgsqlCommand cmd = new NpgsqlCommand(sqlCommand, conn);
+            return cmd.ExecuteScalar();
+        }
+
         public void ExecuteNonQuery(string sqlCommand)
         {
             using (NpgsqlCommand cmd = new NpgsqlCommand(sqlCommand, conn))

@@ -42,6 +42,8 @@ namespace CoursLoadAccounting
             databaseUniversity.Close();
         }
 
+        
+
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
 

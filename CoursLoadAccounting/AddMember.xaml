@@ -5,14 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CoursLoadAccounting"
         mc:Ignorable="d"
-        Title="AddMember" Height="550" Width="400"
+        Title="Добавление" Height="550" Width="400"
          WindowStartupLocation="CenterScreen" FontSize="14" ResizeMode="NoResize">
     <Grid Background="#FFEDE6D7">
 
-        <StackPanel x:Name="textBoxPanel" Orientation="Vertical"
-                    >
-            <!-- Текстовые поля будут добавлены динамически -->
-        </StackPanel>
+        <StackPanel x:Name="addPanel" Orientation="Vertical"/>
 
     </Grid>
 </Window>
