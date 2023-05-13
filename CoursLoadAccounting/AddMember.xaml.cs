@@ -127,9 +127,61 @@ namespace CoursLoadAccounting
 
                 addPanel.Children.Add(addMembers);                
             }
-            if (ind == 4) { }
+            if (ind == 4) 
+            {
+                this.Title = "Добавление дисциплины";
+
+                labels.Add(GetLabel("Название дисциплины:"));
+                textBoxes.Add(GetTextBox());
+
+                labels.Add(GetLabel("Кафедра:"));
+                comboBoxes.Add(GetKafedr());
+                comboBoxes[0].SelectionChanged += OtherKafedr_Click;
+
+                Button AddDiscip = GetButton();
+                AddDiscip.Click += AddDiscip_Click;
+
+                addPanel.Children.Add(labels[0]);
+                addPanel.Children.Add(textBoxes[0]);
+                addPanel.Children.Add(labels[1]);
+                addPanel.Children.Add(comboBoxes[0]);
+                addPanel.Children.Add(AddDiscip);
+            }
             if (ind == 5) { }           
         }
+
+        private ComboBox GetKafedr()
+        {
+            ComboBox comboBox = GetComboBox();
+
+            databaseUniversity.Open();
+
+            var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Kafedra");
+
+            if (reader.HasRows)
+            {
+                int i = 0;
+
+                Dictionary<int, int> getId = new Dictionary<int, int>();
+
+                while (reader.Read())
+                {
+                    getId.Add(i, (int)reader.GetValue(0));
+                    comboBox.Items.Add((string)reader.GetValue(1));
+                    i++;
+                }
+
+                getIdFromComboboxes.Add(getId);
+            }
+
+            databaseUniversity.Close();
+
+            comboBox.Items.Add("Другой");
+            comboBox.SelectedIndex = 0;
+
+            return comboBox;
+        }
+
         private ComboBox GetMembers()
         {
             ComboBox comboBox = GetComboBox();
@@ -268,6 +320,43 @@ namespace CoursLoadAccounting
             
         }
 
+        private void OtherKafedr_Click(object sender, SelectionChangedEventArgs e)
+        {
+            int n = comboBoxes[0].Items.Count - 1;
+            if (comboBoxes[0].SelectedIndex == n)
+            {
+                AddMember addMember = new AddMember(1, databaseUniversity);
+                addMember.ShowDialog();
+
+                databaseUniversity.Open();
+
+                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM Kafedra");
+                if (count > n)
+                {
+                    var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Kafedra " +
+                                                                        "ORDER BY id DESC LIMIT 1");
+                    if (reader.HasRows)
+                    {
+                        comboBoxes[0].Items.RemoveAt(n);
+
+                        reader.Read();
+
+                        comboBoxes[0].Items.Add((string)reader["name"]);
+
+                        getIdFromComboboxes[0].Add(n, (int)reader["id"]);
+
+                        comboBoxes[0].Items.Add("Другой");
+                        comboBoxes[0].SelectedIndex = comboBoxes[0].Items.Count - 2;
+                    }
+                }
+                else
+                    comboBoxes[0].SelectedIndex = 0;
+
+                databaseUniversity.Close();
+            }
+
+        }
+
         private void AddFaculty_Click(object sender, RoutedEventArgs e) // Сделать проверку на допустимость символов
         {
             
@@ -295,6 +384,15 @@ namespace CoursLoadAccounting
             databaseUniversity.Open();
             databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text}', " +
                                                $"{getIdFromComboboxes[0][comboBoxes[0].SelectedIndex]}, {getIdFromComboboxes[1][comboBoxes[1].SelectedIndex]});");
+            databaseUniversity.Close();
+
+            this.Close();
+        }
+
+        private void AddDiscip_Click(object sender, RoutedEventArgs e)
+        {
+            databaseUniversity.Open();
+            databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text}', {getIdFromComboboxes[0][comboBoxes[0].SelectedIndex]})");
             databaseUniversity.Close();
 
             this.Close();
