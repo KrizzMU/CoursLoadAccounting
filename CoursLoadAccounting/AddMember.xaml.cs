@@ -27,9 +27,13 @@ namespace CoursLoadAccounting
 
         public List<TextBox> textBoxes = new List<TextBox>();
 
-        public List<ComboBox> comboBoxes = new List<ComboBox>();
+        public Dictionary<string, ComboBox> comboBoxes = new Dictionary<string, ComboBox>();
 
-        private List<Dictionary<int, int>> getIdFromComboboxes = new List<Dictionary<int, int>>();
+        //public List<ComboBox> comboBoxes = new List<ComboBox>();
+
+        private Dictionary<string, Dictionary<int, int>> getIdFromComboboxes = new Dictionary<string, Dictionary<int, int>>();
+
+        //private Dictionary<string, <Dictionary<int, int>> getIdFromComboboxes = new Dictionary<string, <Dictionary<int, int>>>();
 
         public AddMember(int ind, PostgresDataBase databaseUniversity)
         {
@@ -47,12 +51,12 @@ namespace CoursLoadAccounting
                 textBoxes.Add(GetTextBox());
 
                 labels.Add(GetLabel("Завкафедрой:"));
-                comboBoxes.Add(GetMembers());
-                comboBoxes[0].SelectionChanged += OtherMembers_Click;                
+                comboBoxes.Add("Members", GetMembers());
+                comboBoxes["Members"].SelectionChanged += OtherMembers_Click;                
 
                 labels.Add(GetLabel("Факультет:"));
-                comboBoxes.Add(GetFacultets());
-                comboBoxes[1].SelectionChanged += OtherFaculty_Click;               
+                comboBoxes.Add("Faculty", GetFacultets());
+                comboBoxes["Faculty"].SelectionChanged += OtherFaculty_Click;               
 
                 Button AddKafedra = GetButton();
                
@@ -61,9 +65,9 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
                 addPanel.Children.Add(labels[1]);
-                addPanel.Children.Add(comboBoxes[0]);
+                addPanel.Children.Add(comboBoxes["Members"]);
                 addPanel.Children.Add(labels[2]);
-                addPanel.Children.Add(comboBoxes[1]);
+                addPanel.Children.Add(comboBoxes["Faculty"]);
                 addPanel.Children.Add(AddKafedra);
             }
             if (ind == 2) 
@@ -76,8 +80,8 @@ namespace CoursLoadAccounting
 
                 labels.Add(GetLabel("Выберетие декана:"));
 
-                comboBoxes.Add(GetMembers());
-                comboBoxes[0].SelectionChanged += OtherMembers_Click;
+                comboBoxes.Add("Members",GetMembers());
+                comboBoxes["Members"].SelectionChanged += OtherMembers_Click;
                 
                 Button AddFaculty = GetButton();
                 AddFaculty.Click += AddFaculty_Click;
@@ -85,7 +89,7 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
                 addPanel.Children.Add(labels[1]);
-                addPanel.Children.Add(comboBoxes[0]);
+                addPanel.Children.Add(comboBoxes["Members"]);
 
                 addPanel.Children.Add(AddFaculty);
 
@@ -130,13 +134,14 @@ namespace CoursLoadAccounting
             if (ind == 4) 
             {
                 this.Title = "Добавление дисциплины";
+                this.Height = 290;
 
                 labels.Add(GetLabel("Название дисциплины:"));
                 textBoxes.Add(GetTextBox());
 
                 labels.Add(GetLabel("Кафедра:"));
-                comboBoxes.Add(GetKafedr());
-                comboBoxes[0].SelectionChanged += OtherKafedr_Click;
+                comboBoxes.Add("Kafedr", GetKafedr());
+                comboBoxes["Kafedr"].SelectionChanged += OtherKafedr_Click;
 
                 Button AddDiscip = GetButton();
                 AddDiscip.Click += AddDiscip_Click;
@@ -144,7 +149,7 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
                 addPanel.Children.Add(labels[1]);
-                addPanel.Children.Add(comboBoxes[0]);
+                addPanel.Children.Add(comboBoxes["Kafedr"]);
                 addPanel.Children.Add(AddDiscip);
             }
             if (ind == 5) { }           
@@ -171,7 +176,7 @@ namespace CoursLoadAccounting
                     i++;
                 }
 
-                getIdFromComboboxes.Add(getId);
+                getIdFromComboboxes.Add("Kafedr", getId);
             }
 
             databaseUniversity.Close();
@@ -203,7 +208,7 @@ namespace CoursLoadAccounting
                     i++;
                 }
 
-                getIdFromComboboxes.Add(getId);
+                getIdFromComboboxes.Add("Members", getId);
             }
 
             databaseUniversity.Close();
@@ -235,7 +240,7 @@ namespace CoursLoadAccounting
                     i++;
                 }
 
-                getIdFromComboboxes.Add(getId);
+                getIdFromComboboxes.Add("Faculty", getId);
             }
 
             databaseUniversity.Close();
@@ -248,8 +253,8 @@ namespace CoursLoadAccounting
         
         private void OtherMembers_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes[0].Items.Count - 1;
-            if (comboBoxes[0].SelectedIndex == n)
+            int n = comboBoxes["Members"].Items.Count - 1;
+            if (comboBoxes["Members"].SelectedIndex == n)
             {
                 AddMember addMember = new AddMember(3, databaseUniversity);
                 addMember.ShowDialog();
@@ -264,20 +269,20 @@ namespace CoursLoadAccounting
                                                                         "ORDER BY id DESC LIMIT 1");
                     if (readerMembers.HasRows)
                     {
-                        comboBoxes[0].Items.RemoveAt(n);
+                        comboBoxes["Members"].Items.RemoveAt(n);
 
                         readerMembers.Read();
 
-                        comboBoxes[0].Items.Add((string)readerMembers["dek"]);
+                        comboBoxes["Members"].Items.Add((string)readerMembers["dek"]);
 
-                        getIdFromComboboxes[0].Add(n, (int)readerMembers["id"]);
+                        getIdFromComboboxes["Members"].Add(n, (int)readerMembers["id"]);
 
-                        comboBoxes[0].Items.Add("Другой");
-                        comboBoxes[0].SelectedIndex = comboBoxes[0].Items.Count - 2;
+                        comboBoxes["Members"].Items.Add("Другой");
+                        comboBoxes["Members"].SelectedIndex = comboBoxes["Members"].Items.Count - 2;
                     }                    
                 }
                 else
-                    comboBoxes[0].SelectedIndex = 0;
+                    comboBoxes["Members"].SelectedIndex = 0;
 
                 databaseUniversity.Close();
             }          
@@ -285,8 +290,8 @@ namespace CoursLoadAccounting
 
         private void OtherFaculty_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes[1].Items.Count - 1;
-            if (comboBoxes[1].SelectedIndex == n)
+            int n = comboBoxes["Faculty"].Items.Count - 1;
+            if (comboBoxes["Faculty"].SelectedIndex == n)
             {
                 AddMember addMember = new AddMember(2, databaseUniversity);
                 addMember.ShowDialog();
@@ -300,20 +305,20 @@ namespace CoursLoadAccounting
                                                                         "ORDER BY id DESC LIMIT 1");
                     if (reader.HasRows)
                     {
-                        comboBoxes[1].Items.RemoveAt(n);
+                        comboBoxes["Faculty"].Items.RemoveAt(n);
 
                         reader.Read();
 
-                        comboBoxes[1].Items.Add((string)reader["name"]);
+                        comboBoxes["Faculty"].Items.Add((string)reader["name"]);
 
-                        getIdFromComboboxes[1].Add(n, (int)reader["id"]);
+                        getIdFromComboboxes["Faculty"].Add(n, (int)reader["id"]);
 
-                        comboBoxes[1].Items.Add("Другой");
-                        comboBoxes[1].SelectedIndex = comboBoxes[1].Items.Count - 2;
+                        comboBoxes["Faculty"].Items.Add("Другой");
+                        comboBoxes["Faculty"].SelectedIndex = comboBoxes["Faculty"].Items.Count - 2;
                     }                                        
                 }
                 else
-                    comboBoxes[1].SelectedIndex = 0;
+                    comboBoxes["Faculty"].SelectedIndex = 0;
 
                 databaseUniversity.Close();
             }
@@ -322,8 +327,8 @@ namespace CoursLoadAccounting
 
         private void OtherKafedr_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes[0].Items.Count - 1;
-            if (comboBoxes[0].SelectedIndex == n)
+            int n = comboBoxes["Kafedr"].Items.Count - 1;
+            if (comboBoxes["Kafedr"].SelectedIndex == n)
             {
                 AddMember addMember = new AddMember(1, databaseUniversity);
                 addMember.ShowDialog();
@@ -337,20 +342,20 @@ namespace CoursLoadAccounting
                                                                         "ORDER BY id DESC LIMIT 1");
                     if (reader.HasRows)
                     {
-                        comboBoxes[0].Items.RemoveAt(n);
+                        comboBoxes["Kafedr"].Items.RemoveAt(n);
 
                         reader.Read();
 
-                        comboBoxes[0].Items.Add((string)reader["name"]);
+                        comboBoxes["Kafedr"].Items.Add((string)reader["name"]);
 
-                        getIdFromComboboxes[0].Add(n, (int)reader["id"]);
+                        getIdFromComboboxes["Kafedr"].Add(n, (int)reader["id"]);
 
-                        comboBoxes[0].Items.Add("Другой");
-                        comboBoxes[0].SelectedIndex = comboBoxes[0].Items.Count - 2;
+                        comboBoxes["Kafedr"].Items.Add("Другой");
+                        comboBoxes["Kafedr"].SelectedIndex = comboBoxes["Kafedr"].Items.Count - 2;
                     }
                 }
                 else
-                    comboBoxes[0].SelectedIndex = 0;
+                    comboBoxes["Kafedr"].SelectedIndex = 0;
 
                 databaseUniversity.Close();
             }
@@ -362,7 +367,7 @@ namespace CoursLoadAccounting
             
             databaseUniversity.Open();
             
-            databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text}', {getIdFromComboboxes[0][comboBoxes[0].SelectedIndex]});");
+            databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text}', {getIdFromComboboxes["Members"][comboBoxes["Members"].SelectedIndex]});");
 
             databaseUniversity.Close();
 
@@ -383,7 +388,7 @@ namespace CoursLoadAccounting
         {         
             databaseUniversity.Open();
             databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text}', " +
-                                               $"{getIdFromComboboxes[0][comboBoxes[0].SelectedIndex]}, {getIdFromComboboxes[1][comboBoxes[1].SelectedIndex]});");
+                                               $"{getIdFromComboboxes["Members"][comboBoxes["Members"].SelectedIndex]}, {getIdFromComboboxes["Faculty"][comboBoxes["Faculty"].SelectedIndex]});");
             databaseUniversity.Close();
 
             this.Close();
@@ -392,7 +397,7 @@ namespace CoursLoadAccounting
         private void AddDiscip_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
-            databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text}', {getIdFromComboboxes[0][comboBoxes[0].SelectedIndex]})");
+            databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text}', {getIdFromComboboxes["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
             databaseUniversity.Close();
 
             this.Close();
