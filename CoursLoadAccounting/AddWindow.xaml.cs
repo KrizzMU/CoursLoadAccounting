@@ -17,9 +17,9 @@ using System.Windows.Shapes;
 namespace CoursLoadAccounting
 {
     /// <summary>
-    /// Interaction logic for AddMember.xaml
+    /// Interaction logic for AddWindow.xaml
     /// </summary>
-    public partial class AddMember : Window
+    public partial class AddWindow : Window
     {
         public PostgresDataBase databaseUniversity;
 
@@ -31,7 +31,7 @@ namespace CoursLoadAccounting
         
         private Dictionary<string, Dictionary<int, int>> getIdTable = new Dictionary<string, Dictionary<int, int>>();
         
-        public AddMember(int ind, PostgresDataBase databaseUniversity)
+        public AddWindow(int ind, PostgresDataBase databaseUniversity)
         {
             this.databaseUniversity = databaseUniversity;
 
@@ -172,10 +172,10 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(labels[4]);
                 addPanel.Children.Add(textBoxes[4]);
 
-                Button addMembers = GetButton();              
-                addMembers.Click += AddMembers_Click;
+                Button AddWindows = GetButton();              
+                AddWindows.Click += AddWindows_Click;
 
-                addPanel.Children.Add(addMembers);                
+                addPanel.Children.Add(AddWindows);                
             }
             if (ind == 4) 
             {
@@ -230,139 +230,36 @@ namespace CoursLoadAccounting
 
         private ComboBox GetKafedr()
         {
-            ComboBox comboBox = GetComboBox();
-
-            databaseUniversity.Open();
-
-            var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Kafedra");
-
-            if (reader.HasRows)
-            {
-                int i = 0;
-
-                Dictionary<int, int> getId = new Dictionary<int, int>();
-
-                while (reader.Read())
-                {
-                    getId.Add(i, (int)reader.GetValue(0));
-                    comboBox.Items.Add((string)reader.GetValue(1));
-                    i++;
-                }
-
-                getIdTable.Add("Kafedr", getId);
-            }
-
-            databaseUniversity.Close();
-
-            comboBox.Items.Add("Другой");
-            comboBox.SelectedIndex = 0;
-
-            return comboBox;
+            return GetFinishedBox("SELECT id, name FROM Kafedra", "Kafedr");
         }
 
         private ComboBox GetMembers()
         {
-            ComboBox comboBox = GetComboBox();
-
-            databaseUniversity.Open();
-
-            var readerMembers = databaseUniversity.ExecuteQuery("SELECT id, CONCAT(firstname, ' ', middlename, ', ', phonenumber) FROM departmentmembers");
-
-            if (readerMembers.HasRows)
-            {
-                int i = 0;
-
-                Dictionary<int, int> getId = new Dictionary<int, int>();
-
-                while (readerMembers.Read())
-                {
-                    getId.Add(i, (int)readerMembers.GetValue(0));
-                    comboBox.Items.Add((string)readerMembers.GetValue(1));
-                    i++;
-                }
-
-                getIdTable.Add("Members", getId);
-            }
-
-            databaseUniversity.Close();
-
-            comboBox.Items.Add("Другой");
-            comboBox.SelectedIndex = 0;
-
-            return comboBox;
+            return GetFinishedBox("SELECT id, CONCAT(firstname, ' ', middlename, ', ', phonenumber) FROM departmentmembers", "Members");         
         }
 
         private ComboBox GetFacultets()
         {
-            ComboBox comboBox = GetComboBox();
-
-            databaseUniversity.Open();
-
-            var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM faculty");
-
-            if (reader.HasRows)
-            {
-                int i = 0;
-
-                Dictionary<int, int> getId = new Dictionary<int, int>();
-
-                while (reader.Read())
-                {
-                    getId.Add(i, (int)reader.GetValue(0));
-                    comboBox.Items.Add((string)reader.GetValue(1));
-                    i++;
-                }
-
-                getIdTable.Add("Faculty", getId);
-            }
-
-            databaseUniversity.Close();
-
-            comboBox.Items.Add("Другой");           
-            comboBox.SelectedIndex = 0;
-
-            return comboBox;
+            return GetFinishedBox("SELECT id, name FROM faculty", "Faculty");
         }
 
         private ComboBox GetDisciplin()
         {
-            ComboBox comboBox = GetComboBox();
-
-            databaseUniversity.Open();
-
-            var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Discipline");
-
-            if (reader.HasRows)
-            {
-                int i = 0;
-
-                Dictionary<int, int> getId = new Dictionary<int, int>();
-
-                while (reader.Read())
-                {
-                    getId.Add(i, (int)reader.GetValue(0));
-                    comboBox.Items.Add((string)reader.GetValue(1));
-                    i++;
-                }
-
-                getIdTable.Add("Discip", getId);
-            }
-
-            databaseUniversity.Close();
-
-            comboBox.Items.Add("Другой");
-            comboBox.SelectedIndex = 0;
-
-            return comboBox;
+            return GetFinishedBox("SELECT id, name FROM Discipline", "Discip");
         }
 
         private ComboBox GetSpecial()
         {
+            return GetFinishedBox("SELECT id, name FROM Speciality", "Special");            
+        }
+
+        private ComboBox GetFinishedBox(string cmd, string getIdKey)
+        {
             ComboBox comboBox = GetComboBox();
 
             databaseUniversity.Open();
 
-            var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Speciality");
+            var reader = databaseUniversity.ExecuteQuery(cmd);
 
             if (reader.HasRows)
             {
@@ -377,7 +274,7 @@ namespace CoursLoadAccounting
                     i++;
                 }
 
-                getIdTable.Add("Special", getId);
+                getIdTable.Add(getIdKey, getId);
             }
 
             databaseUniversity.Close();
@@ -388,193 +285,70 @@ namespace CoursLoadAccounting
             return comboBox;
         }
 
-
         private void OtherMembers_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes["Members"].Items.Count - 1;
-            if (comboBoxes["Members"].SelectedIndex == n)
-            {
-                AddMember addMember = new AddMember(3, databaseUniversity);
-                addMember.ShowDialog();
-
-                databaseUniversity.Open();
-
-                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM departmentmembers");
-                if (count > n)
-                {
-                    
-                    var readerMembers = databaseUniversity.ExecuteQuery("SELECT id, CONCAT(firstname, ' ', middlename, ', ', phonenumber) as dek FROM departmentmembers " +
-                                                                        "ORDER BY id DESC LIMIT 1");
-                    if (readerMembers.HasRows)
-                    {
-                        comboBoxes["Members"].Items.RemoveAt(n);
-
-                        readerMembers.Read();
-
-                        comboBoxes["Members"].Items.Add((string)readerMembers["dek"]);
-
-                        getIdTable["Members"].Add(n, (int)readerMembers["id"]);
-
-                        comboBoxes["Members"].Items.Add("Другой");
-                        comboBoxes["Members"].SelectedIndex = comboBoxes["Members"].Items.Count - 2;
-                    }                    
-                }
-                else
-                    comboBoxes["Members"].SelectedIndex = 0;
-
-                databaseUniversity.Close();
-            }          
+            OtherClick("departmentmembers", "Members", "SELECT id, CONCAT(firstname, ' ', middlename, ', ', phonenumber) as name " +
+                "FROM departmentmembers ORDER BY id DESC LIMIT 1", 3);            
         }
 
         private void OtherFaculty_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes["Faculty"].Items.Count - 1;
-            if (comboBoxes["Faculty"].SelectedIndex == n)
-            {
-                AddMember addMember = new AddMember(2, databaseUniversity);
-                addMember.ShowDialog();
-
-                databaseUniversity.Open();
-
-                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM faculty");
-                if (count > n)
-                {                    
-                    var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM faculty " +
-                                                                        "ORDER BY id DESC LIMIT 1");
-                    if (reader.HasRows)
-                    {
-                        comboBoxes["Faculty"].Items.RemoveAt(n);
-
-                        reader.Read();
-
-                        comboBoxes["Faculty"].Items.Add((string)reader["name"]);
-
-                        getIdTable["Faculty"].Add(n, (int)reader["id"]);
-
-                        comboBoxes["Faculty"].Items.Add("Другой");
-                        comboBoxes["Faculty"].SelectedIndex = comboBoxes["Faculty"].Items.Count - 2;
-                    }                                        
-                }
-                else
-                    comboBoxes["Faculty"].SelectedIndex = 0;
-
-                databaseUniversity.Close();
-            }
-            
+            OtherClick("faculty", "Faculty", "SELECT id, name FROM faculty ORDER BY id DESC LIMIT 1", 2);           
         }
 
         private void OtherKafedr_Click(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes["Kafedr"].Items.Count - 1;
-            if (comboBoxes["Kafedr"].SelectedIndex == n)
-            {
-                AddMember addMember = new AddMember(1, databaseUniversity);
-                addMember.ShowDialog();
-
-                databaseUniversity.Open();
-
-                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM Kafedra");
-                if (count > n)
-                {
-                    var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Kafedra " +
-                                                                        "ORDER BY id DESC LIMIT 1");
-                    if (reader.HasRows)
-                    {
-                        comboBoxes["Kafedr"].Items.RemoveAt(n);
-
-                        reader.Read();
-
-                        comboBoxes["Kafedr"].Items.Add((string)reader["name"]);
-
-                        getIdTable["Kafedr"].Add(n, (int)reader["id"]);
-
-                        comboBoxes["Kafedr"].Items.Add("Другой");
-                        comboBoxes["Kafedr"].SelectedIndex = comboBoxes["Kafedr"].Items.Count - 2;
-                    }
-                }
-                else
-                    comboBoxes["Kafedr"].SelectedIndex = 0;
-
-                databaseUniversity.Close();
-            }
-
+            OtherClick("Kafedra", "Kafedr", "SELECT id, name FROM Kafedra ORDER BY id DESC LIMIT 1", 1);
         }
 
         private void OtherDiscip_Сlick(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes["Discip"].Items.Count - 1;
-            if (comboBoxes["Discip"].SelectedIndex == n)
-            {
-                AddMember addMember = new AddMember(1, databaseUniversity);
-                addMember.ShowDialog();
-
-                databaseUniversity.Open();
-
-                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM Discipline");
-                if (count > n)
-                {
-                    var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Discipline " +
-                                                                        "ORDER BY id DESC LIMIT 1");
-                    if (reader.HasRows)
-                    {
-                        comboBoxes["Discip"].Items.RemoveAt(n);
-
-                        reader.Read();
-
-                        comboBoxes["Discip"].Items.Add((string)reader["name"]);
-
-                        getIdTable["Discip"].Add(n, (int)reader["id"]);
-
-                        comboBoxes["Discip"].Items.Add("Другой");
-                        comboBoxes["Discip"].SelectedIndex = comboBoxes["Discip"].Items.Count - 2;
-                    }
-                }
-                else
-                    comboBoxes["Discip"].SelectedIndex = 0;
-
-                databaseUniversity.Close();
-            }
+            OtherClick("Discipline", "Discip", "SELECT id, name FROM Discipline ORDER BY id DESC LIMIT 1", 4);         
         }
 
         private void OtherSpecial_Сlick(object sender, SelectionChangedEventArgs e)
         {
-            int n = comboBoxes["Special"].Items.Count - 1;
-            if (comboBoxes["Special"].SelectedIndex == n)
+            OtherClick("Speciality", "Special", "SELECT id, name FROM Speciality ORDER BY id DESC LIMIT 1", 5);            
+        }
+
+        private void OtherClick(string table, string getIdKey, string cmd, int nextWindow)
+        {
+            int n = comboBoxes[getIdKey].Items.Count - 1;
+            if (comboBoxes[getIdKey].SelectedIndex == n)
             {
-                AddMember addMember = new AddMember(1, databaseUniversity);
-                addMember.ShowDialog();
+                AddWindow AddWindow = new AddWindow(nextWindow, databaseUniversity);
+                AddWindow.ShowDialog();
 
                 databaseUniversity.Open();
 
-                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM Speciality");
+                int count = (int)(long)databaseUniversity.ExecuteScalar("SELECT COUNT(*) FROM " + table);
                 if (count > n)
                 {
-                    var reader = databaseUniversity.ExecuteQuery("SELECT id, name FROM Speciality " +
-                                                                        "ORDER BY id DESC LIMIT 1");
-                    if (reader.HasRows)
+
+                    var readerMembers = databaseUniversity.ExecuteQuery(cmd);
+                    if (readerMembers.HasRows)
                     {
-                        comboBoxes["Special"].Items.RemoveAt(n);
+                        comboBoxes[getIdKey].Items.RemoveAt(n);
 
-                        reader.Read();
+                        readerMembers.Read();
 
-                        comboBoxes["Special"].Items.Add((string)reader["name"]);
+                        comboBoxes[getIdKey].Items.Add((string)readerMembers["name"]);
 
-                        getIdTable["Special"].Add(n, (int)reader["id"]);
+                        getIdTable[getIdKey].Add(n, (int)readerMembers["id"]);
 
-                        comboBoxes["Special"].Items.Add("Другой");
-                        comboBoxes["Special"].SelectedIndex = comboBoxes["Special"].Items.Count - 2;
+                        comboBoxes[getIdKey].Items.Add("Другой");
+                        comboBoxes[getIdKey].SelectedIndex = comboBoxes[getIdKey].Items.Count - 2;
                     }
                 }
                 else
-                    comboBoxes["Special"].SelectedIndex = 0;
+                    comboBoxes[getIdKey].SelectedIndex = 0;
 
                 databaseUniversity.Close();
             }
         }
 
-        private void AddFaculty_Click(object sender, RoutedEventArgs e) // Сделать проверку на допустимость символов
-        {
-            
+        private void AddFaculty_Click(object sender, RoutedEventArgs e)
+        {           
             databaseUniversity.Open();
             
             databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
@@ -584,7 +358,7 @@ namespace CoursLoadAccounting
             this.Close();
         }
 
-        private void AddMembers_Click(object sender, RoutedEventArgs e) // Сделать проверку на допустимость значений.
+        private void AddWindows_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
             databaseUniversity.ExecuteNonQuery($"CALL add_departmentmember('{textBoxes[0].Text}', '{textBoxes[1].Text}', '{textBoxes[4].Text}', " +
@@ -626,15 +400,15 @@ namespace CoursLoadAccounting
         private void AddUchet_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
+
             databaseUniversity.ExecuteNonQuery($"CALL add_discipline_speciality('{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
                 $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text}, '{comboBoxes["Sessia"].SelectedIndex}', " +
                 $"{textBoxes[0].Text}, {textBoxes[1].Text}, {textBoxes[2].Text})");
+
             databaseUniversity.Close();
 
             this.Close();
         }
-
-
 
         private Label GetLabel(string name)
         {

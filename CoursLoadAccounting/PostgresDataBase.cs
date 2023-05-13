@@ -104,8 +104,6 @@ namespace CoursLoadAccounting
 
             return dataTable;
            
-        }
-
-      
+        }      
     }
 }

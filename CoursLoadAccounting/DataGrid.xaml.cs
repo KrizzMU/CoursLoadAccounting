@@ -58,9 +58,9 @@ namespace CoursLoadAccounting
         {
             
             
-            AddMember addMember = new AddMember(SelectTable.SelectedIndex, databaseUniversity);
-            addMember.ShowDialog();
-            addMember.Owner = this;
+            AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity);
+            AddWindow.ShowDialog();
+            AddWindow.Owner = this;
 
             databaseUniversity.Open();
 
