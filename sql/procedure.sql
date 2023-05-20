@@ -8,10 +8,12 @@ CREATE OR REPLACE PROCEDURE add_departmentmember(
 )
 LANGUAGE SQL
 AS $$
+BEGIN
     p_phonenumber = format_phone_number(p_phonenumber)
     
     INSERT INTO departmentmembers (firstname, secondname, middlename, email, phonenumber)
     VALUES (p_firstname, p_secondname, p_middlename, p_email, p_phonenumber);
+END
 $$;
 
 
