@@ -52,7 +52,7 @@
                   CanUserAddRows="False"
                   AutoGenerateColumns="True" ItemsSource="{Binding}"
                   BorderBrush="#FFEDE6D7" ColumnHeaderStyle="{StaticResource CustomColumnHeaderStyle}" 
-                  Background="#FFF1EEE5" FontSize="14"              
+                  Background="#FFF1EEE5" FontSize="14"                             
                   />
 
         <ComboBox x:Name="SelectTable" Grid.Row="1" Grid.Column="5" 

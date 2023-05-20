@@ -64,8 +64,8 @@ namespace CoursLoadAccounting
 
                 labels.Add(GetLabel("Сессия:"));
                 comboBoxes.Add("Sessia", GetComboBox());
-                comboBoxes["Sessia"].Items.Add("Экзамен");
                 comboBoxes["Sessia"].Items.Add("Зачет");
+                comboBoxes["Sessia"].Items.Add("Экзамен");
                 comboBoxes["Sessia"].SelectedIndex = 0;
 
                 addPanel.Children.Add(labels[0]);
@@ -146,7 +146,7 @@ namespace CoursLoadAccounting
                 this.Height = 450;
 
                 labels.Add(GetLabel("Имя"));
-                labels.Add(GetLabel("Фамилие"));
+                labels.Add(GetLabel("Фамилия"));
                 labels.Add(GetLabel("Отчество"));
                 labels.Add(GetLabel("Почта(если есть)"));
                 labels.Add(GetLabel("Номер телефона"));
@@ -172,10 +172,10 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(labels[4]);
                 addPanel.Children.Add(textBoxes[4]);
 
-                Button AddWindows = GetButton();              
-                AddWindows.Click += AddWindows_Click;
+                Button AddMember = GetButton();              
+                AddMember.Click += AddMember_Click;
 
-                addPanel.Children.Add(AddWindows);                
+                addPanel.Children.Add(AddMember);                
             }
             if (ind == 4) 
             {
@@ -350,65 +350,125 @@ namespace CoursLoadAccounting
         private void AddFaculty_Click(object sender, RoutedEventArgs e)
         {           
             databaseUniversity.Open();
+
+            if ((bool)databaseUniversity.ExecuteScalar($"SELECT CheckFaculty('{textBoxes[0].Text}')")) 
+            {
+                MessageBox.Show("Данный факультет уже существует!");
+            }
+            else
+            {
+                try
+                {
+                    databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+                }
+
+                this.Close();
+            }
             
-            databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
 
             databaseUniversity.Close();
 
-            this.Close();
-        }
+            
+        } 
 
-        private void AddWindows_Click(object sender, RoutedEventArgs e)
+        private void AddMember_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
-            databaseUniversity.ExecuteNonQuery($"CALL add_departmentmember('{textBoxes[0].Text}', '{textBoxes[1].Text}', '{textBoxes[4].Text}', " +
+            try
+            {
+                databaseUniversity.ExecuteNonQuery($"CALL add_departmentmember('{textBoxes[0].Text}', '{textBoxes[1].Text}', '{textBoxes[4].Text}', " +
                                                                          $"'{textBoxes[2].Text}', '{textBoxes[3].Text}');");
+                this.Close();
+            }
+            catch (Exception ex )
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
             databaseUniversity.Close();
 
-            this.Close();
-        }
+
+        } 
 
         private void AddKafedra_Click(object sender, RoutedEventArgs e)
         {         
             databaseUniversity.Open();
-            databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text}', " +
+            try
+            {
+                databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text}', " +
                                                $"{getIdTable["Members"][comboBoxes["Members"].SelectedIndex]}, {getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]});");
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
             databaseUniversity.Close();
-
-            this.Close();
-        }
+        } 
 
         private void AddDiscip_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
-            databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+
+            try
+            {
+                databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
+
             databaseUniversity.Close();
+        } 
 
-            this.Close();
-        }
-
-        private void AddSpecial_Click(object sender, RoutedEventArgs e)
+        private void AddSpecial_Click(object sender, RoutedEventArgs e) 
         {
             databaseUniversity.Open();
-            databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text}', '{textBoxes[1].Text}', " +
-                                               $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
-            databaseUniversity.Close();
 
-            this.Close();
-        }
+            try
+            {
+                databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text}', '{textBoxes[1].Text}', " +
+                                               $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
+
+            databaseUniversity.Close();          
+        } 
 
         private void AddUchet_Click(object sender, RoutedEventArgs e)
         {
+            string lec = textBoxes[0].Text == "" ? "0" : textBoxes[0].Text;
+            string prac = textBoxes[1].Text == "" ? "0" : textBoxes[1].Text;
+            string lab = textBoxes[2].Text == "" ? "0" : textBoxes[2].Text;
+            if (!(int.TryParse(lab, out int a) && int.TryParse(lec, out int b) && int.TryParse(prac, out int c) && int.TryParse(textBoxes[3].Text, out int g)))
+            {
+                MessageBox.Show("Недопустимые значения!");
+                return;
+            }
             databaseUniversity.Open();
-
-            databaseUniversity.ExecuteNonQuery($"CALL add_discipline_speciality('{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
-                $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text}, '{comboBoxes["Sessia"].SelectedIndex}', " +
-                $"{textBoxes[0].Text}, {textBoxes[1].Text}, {textBoxes[2].Text})");
-
-            databaseUniversity.Close();
-
-            this.Close();
-        }
+            try
+            {
+                databaseUniversity.ExecuteNonQuery($"CALL add_discipline_speciality('{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
+                $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text}, '{comboBoxes["Sessia"].SelectedIndex+1}', " +
+                $"{lec}, {prac}, {lab})");
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
+            
+            databaseUniversity.Close();    
+        } 
 
         private Label GetLabel(string name)
         {
