@@ -58,7 +58,7 @@ namespace CoursLoadAccounting
         {
             
             
-            AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity);
+            AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity, "Добавление");
             AddWindow.ShowDialog();
             AddWindow.Owner = this;
 
@@ -68,6 +68,31 @@ namespace CoursLoadAccounting
 
             databaseUniversity.Close();
 
+        }
+
+        private void DelButtom_Click(object sender, RoutedEventArgs e)
+        {
+            if(TableDB.SelectedIndex > -1)
+            {
+                databaseUniversity.Delete(SelectTable.SelectedIndex, TableDB.SelectedIndex);
+
+                databaseUniversity.Open();
+
+                TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
+
+                databaseUniversity.Close();
+            }
+        }
+
+        private void EditButtom_Click(object sender, RoutedEventArgs e)
+        {
+            if (TableDB.SelectedIndex > -1)
+            {
+
+                AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity, "Изменение");
+                AddWindow.ShowDialog();
+                AddWindow.Owner = this;
+            }
         }
     }
 }

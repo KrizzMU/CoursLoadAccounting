@@ -13,7 +13,7 @@ namespace CoursLoadAccounting
     {
         private NpgsqlConnection conn;
 
-        private Dictionary<int, string> tables = new Dictionary<int, string>()
+        private Dictionary<int, string> tablesView = new Dictionary<int, string>()
         {
             [0] = "uchet_fulltable",
             [1] = "OrgStructur",
@@ -22,6 +22,27 @@ namespace CoursLoadAccounting
             [4] = "Discip",
             [5] = "Spec"
         };
+
+        private Dictionary<int, string> tables = new Dictionary<int, string>()
+        {
+            [0] = "DisciplineSpeciality",
+            [1] = "Kafedra",
+            [2] = "Faculty",
+            [3] = "departmentmembers",
+            [4] = "Discipline",
+            [5] = "Speciality"
+        };
+
+        private Dictionary<int, string> procedursDelete = new Dictionary<int, string>()
+        {
+            [0] = "discipline_speciality",
+            [1] = "kafedra",
+            [2] = "faculty",
+            [3] = "departmentmember",
+            [4] = "discipline",
+            [5] = "speciality"
+        };
+
         public PostgresDataBase(string userId, string password)
         {
             string connString = $"Server=localhost;Database=UniversityWorkload;User Id={userId};Password={password};";
@@ -77,15 +98,15 @@ namespace CoursLoadAccounting
 
         public DataTable GetTable(int ind)
         {
-            return RefreshDB(tables[ind]);
+            return RefreshDB(tablesView[ind]);
         }
 
         public DataTable SearchTable(int ind, string search)
         {
             
-            string cmd = $"SELECT * FROM {tables[ind]} WHERE";
+            string cmd = $"SELECT * FROM {tablesView[ind]} WHERE";
 
-            NpgsqlDataReader reader = ExecuteQuery($"SELECT * FROM {tables[ind]} LIMIT 1");
+            NpgsqlDataReader reader = ExecuteQuery($"SELECT * FROM {tablesView[ind]} LIMIT 1");
             
             for (int i = 0; i < reader.FieldCount-1; i++)
             {
@@ -105,5 +126,30 @@ namespace CoursLoadAccounting
             return dataTable;
            
         }      
+
+        public void Delete(int tableID, int numberOfString)
+        {
+            Open();
+
+            int idStr = -1;
+
+            using (var reader = ExecuteQuery($"SELECT * FROM {tables[tableID]} LIMIT {numberOfString+1}"))
+            {
+                int i = 0;
+                
+                while (reader.Read())
+                {
+                    if (i == numberOfString)
+                    {
+                        idStr = (int)reader["id"];
+                    }
+                    i++;
+                }
+            }
+            
+            ExecuteNonQuery($"CALL delete_{procedursDelete[tableID]}({idStr})");
+
+            Close();
+        }
     }
 }

@@ -85,12 +85,20 @@
         </Button>
 
         <Button Grid.Column="5" Grid.Row="2" Height="45" Width="90" 
-                HorizontalAlignment="Left"
-                x:Name="AddButtom" Content="Добавить" Click="AddButtom_Click"/>
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="0 0 0 10"
+                x:Name="AddButtom" Content="Добавить" 
+                Click="AddButtom_Click"/>
         
         <Button Grid.Column="5" Grid.Row="2" Height="45" Width="90" 
-                HorizontalAlignment="Right"
-                x:Name="DeleteButtom" Content="Удалить"/>
-        
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                x:Name="DeleteButtom" Content="Удалить" Margin="0 0 0 10"
+                Click="DelButtom_Click"/>
+
+        <Button Grid.Column="5" Grid.Row="3" Height="45"  
+                HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                x:Name="EditButtom" Content="Изменить"
+                Click="EditButtom_Click"/>
+
     </Grid>
 </Window>

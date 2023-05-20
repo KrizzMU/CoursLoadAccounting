@@ -128,7 +128,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER add_discipline_trigger
+CREATE TRIGGER add_spec_trigger
 BEFORE INSERT ON Speciality
 FOR EACH ROW
 EXECUTE FUNCTION validate_spec();

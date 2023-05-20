@@ -1,16 +1,18 @@
 CREATE OR REPLACE PROCEDURE add_departmentmember(
-    IN p_firstname VARCHAR(15),
-    IN p_secondname VARCHAR(15),
-    IN p_phonenumber VARCHAR(16),
-    IN p_middlename VARCHAR(15) DEFAULT NULL,
-    IN p_email VARCHAR(30) DEFAULT NULL
+    IN p_firstname TEXT,
+    IN p_secondname TEXT,
+    IN p_phonenumber TEXT,
+    IN p_middlename TEXT DEFAULT NULL,
+    IN p_email TEXT DEFAULT NULL
 	
 )
 LANGUAGE SQL
 AS $$
 BEGIN
     p_phonenumber := format_phone_number(p_phonenumber)
-    
+    IF CheckMembersPhone(p_phonenumber) THEN
+        RAISE EXCEPTION 'Данный номер уже занят!';
+    END IF;
     INSERT INTO departmentmembers (firstname, secondname, middlename, email, phonenumber)
     VALUES (p_firstname, p_secondname, p_middlename, p_email, p_phonenumber);
 END
@@ -20,11 +22,11 @@ $$;
 
 CREATE OR REPLACE PROCEDURE update_departmentmember(
     IN p_id INT,
-    IN p_firstname VARCHAR(15),
-    IN p_secondname VARCHAR(15),
-    IN p_phonenumber VARCHAR(16),
-    IN p_middlename VARCHAR(15) DEFAULT NULL,
-    IN p_email VARCHAR(30) DEFAULT NULL
+    IN p_firstname TEXT,
+    IN p_secondname TEXT,
+    IN p_phonenumber TEXT,
+    IN p_middlename TEXT DEFAULT NULL,
+    IN p_email TEXT DEFAULT NULL
 )
 LANGUAGE SQL
 AS $$
@@ -47,7 +49,7 @@ AS $$
 $$;
 
 CREATE OR REPLACE PROCEDURE add_faculty(
-    IN p_name VARCHAR(15),
+    IN p_name TEXT,
     IN p_department_id INTEGER
 )
 LANGUAGE SQL
@@ -58,7 +60,7 @@ $$;
 
 CREATE OR REPLACE PROCEDURE update_faculty(
     IN p_id INT,
-    IN p_name VARCHAR(15),
+    IN p_name TEXT,
     IN p_department_id INTEGER
 )
 LANGUAGE SQL
@@ -79,7 +81,7 @@ AS $$
 $$;
 
 CREATE OR REPLACE PROCEDURE add_kafedra(
-    IN p_name VARCHAR(35),
+    IN p_name TEXT,
     IN p_department_id INTEGER,
     IN p_faculty_id INTEGER
 )
@@ -93,7 +95,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE update_kafedra(
     IN p_id INT,
-    IN p_name VARCHAR(35),
+    IN p_name TEXT,
     IN p_department_id INTEGER,
     IN p_faculty_id INTEGER
 )
@@ -116,7 +118,7 @@ AS $$
 $$;
 
 CREATE OR REPLACE PROCEDURE add_speciality(
-    IN p_name VARCHAR(30),
+    IN p_name TEXT,
     IN p_code VARCHAR(8),
     IN p_faculty_id INTEGER
 )
@@ -131,8 +133,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE update_speciality(
     IN p_id INT,
-    IN p_name VARCHAR(30),
-    IN p_code VARCHAR(8),
+    IN p_name TEXT,
+    IN p_code TEXT,
     IN p_faculty_id INTEGER
 )
 LANGUAGE SQL
@@ -154,7 +156,7 @@ AS $$
 $$;
 
 CREATE OR REPLACE PROCEDURE add_discipline(
-    IN p_name VARCHAR(25),
+    IN p_name TEXT,
     IN p_kafedra_id INTEGER
 )
 AS $$
@@ -167,7 +169,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE update_discipline(
     IN p_id INT,
-    IN p_name VARCHAR(25),
+    IN p_name TEXT,
     IN p_kafedra_id INTEGER
 )
 LANGUAGE SQL
