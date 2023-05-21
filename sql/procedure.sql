@@ -6,17 +6,17 @@ CREATE OR REPLACE PROCEDURE add_departmentmember(
     IN p_email TEXT DEFAULT NULL
 	
 )
-LANGUAGE SQL
 AS $$
 BEGIN
-    p_phonenumber := format_phone_number(p_phonenumber)
+    p_phonenumber := format_phone_number(p_phonenumber);
     IF CheckMembersPhone(p_phonenumber) THEN
         RAISE EXCEPTION 'Данный номер уже занят!';
     END IF;
+    p_email := validate_email(p_email);
     INSERT INTO departmentmembers (firstname, secondname, middlename, email, phonenumber)
     VALUES (p_firstname, p_secondname, p_middlename, p_email, p_phonenumber);
 END
-$$;
+$$ LANGUAGE plpgsql;
 
 
 
@@ -200,7 +200,7 @@ CREATE OR REPLACE PROCEDURE add_discipline_speciality(
 )
 AS $$
 BEGIN
-    CheckUchet(p_discipline_id, p_speciality_id);
+    PERFORM CheckUchet(p_discipline_id, p_speciality_id);
     INSERT INTO DisciplineSpeciality (DisciplineID, SpecialityID, lechour, prhour, labs, semestr, sessia)
     VALUES (p_discipline_id, p_speciality_id, p_lechour, p_prhours, p_labs, p_semestr, p_sessia);
 END
@@ -237,3 +237,4 @@ AS $$
     DELETE FROM DisciplineSpeciality
     WHERE id = p_id;
 $$;
+

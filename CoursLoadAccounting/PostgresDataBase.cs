@@ -131,25 +131,33 @@ namespace CoursLoadAccounting
         {
             Open();
 
+            int idStr = GetId(tableID, numberOfString);
+            
+            ExecuteNonQuery($"CALL delete_{procedursDelete[tableID]}({idStr})");
+
+            Close();
+        }
+
+        public int GetId(int tableID, int numberOfString)
+        {           
             int idStr = -1;
 
-            using (var reader = ExecuteQuery($"SELECT * FROM {tables[tableID]} LIMIT {numberOfString+1}"))
+            using (var reader = ExecuteQuery($"SELECT * FROM {tables[tableID]} LIMIT {numberOfString + 1}"))
             {
                 int i = 0;
-                
+
                 while (reader.Read())
                 {
                     if (i == numberOfString)
                     {
                         idStr = (int)reader["id"];
                     }
+
                     i++;
                 }
             }
-            
-            ExecuteNonQuery($"CALL delete_{procedursDelete[tableID]}({idStr})");
 
-            Close();
+            return idStr;
         }
     }
 }

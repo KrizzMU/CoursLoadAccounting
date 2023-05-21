@@ -35,10 +35,7 @@ BEFORE INSERT ON departmentmembers
 FOR EACH ROW
 EXECUTE FUNCTION validate_name();
 
-CREATE TRIGGER add_faculty_trigger
-BEFORE INSERT ON Faculty
-FOR EACH ROW
-EXECUTE FUNCTION validate_Faculty();
+
 
 CREATE OR REPLACE FUNCTION validate_Faculty()
   RETURNS TRIGGER AS $$
@@ -55,6 +52,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE TRIGGER add_faculty_trigger
+BEFORE INSERT ON Faculty
+FOR EACH ROW
+EXECUTE FUNCTION validate_Faculty();
+
 
 
 CREATE OR REPLACE FUNCTION validate_Kafedra()
@@ -66,7 +68,7 @@ BEGIN
   IF fname = '' THEN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
-  IF fname ~ '^[а-яА-ЯЁё0-9-]+$' THEN
+  IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
       fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
@@ -92,7 +94,7 @@ BEGIN
   IF fname = '' THEN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
-  IF fname ~ '^[а-яА-ЯЁё0-9-]+$' THEN
+  IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
       fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
@@ -118,7 +120,7 @@ BEGIN
   IF fname = '' THEN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
-  IF fname ~ '^[а-яА-ЯЁё0-9-]+$' THEN
+  IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
       fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';

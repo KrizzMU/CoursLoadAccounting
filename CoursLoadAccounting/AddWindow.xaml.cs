@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata;
 //using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,15 +31,32 @@ namespace CoursLoadAccounting
         public Dictionary<string, ComboBox> comboBoxes = new Dictionary<string, ComboBox>();
         
         private Dictionary<string, Dictionary<int, int>> getIdTable = new Dictionary<string, Dictionary<int, int>>();
+
+        private int idStr = -1;
         
-        public AddWindow(int ind, PostgresDataBase databaseUniversity, string whatDo)
+        public AddWindow(int ind, PostgresDataBase databaseUniversity)  
         {
             this.databaseUniversity = databaseUniversity;
 
             InitializeComponent();
 
-            GetUI(ind, whatDo);
+            GetUI(ind, "Добавление");
                    
+        }
+
+        public AddWindow(int ind, PostgresDataBase databaseUniversity, int idStr) 
+        {
+            this.databaseUniversity = databaseUniversity;
+
+            InitializeComponent();
+
+            databaseUniversity.Open();
+
+            this.idStr = databaseUniversity.GetId(ind, idStr);
+
+            databaseUniversity.Close();
+
+            GetUI(ind, "Изменение");
         }
 
         private void GetUI(int ind, string whatDo)
@@ -88,9 +106,11 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(textBoxes[3]);
                 addPanel.Children.Add(labels[6]);
                 addPanel.Children.Add(comboBoxes["Sessia"]);
-
+                
                 Button AddUchet = GetButton();
-                AddUchet.Click += AddUchet_Click;
+
+                AddUchet.Click += Uchet_Click;
+
                 addPanel.Children.Add(AddUchet);
 
             }
@@ -112,7 +132,7 @@ namespace CoursLoadAccounting
 
                 Button AddKafedra = GetButton();
 
-                AddKafedra.Click += AddKafedra_Click;
+                AddKafedra.Click += Kafedra_Click;
 
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
@@ -136,7 +156,7 @@ namespace CoursLoadAccounting
                 comboBoxes["Members"].SelectionChanged += OtherMembers_Click;
 
                 Button AddFaculty = GetButton();
-                AddFaculty.Click += AddFaculty_Click;
+                AddFaculty.Click += Faculty_Click;
 
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
@@ -179,7 +199,7 @@ namespace CoursLoadAccounting
                 addPanel.Children.Add(textBoxes[4]);
 
                 Button AddMember = GetButton();
-                AddMember.Click += AddMember_Click;
+                AddMember.Click += Member_Click;
 
                 addPanel.Children.Add(AddMember);
             }
@@ -196,7 +216,7 @@ namespace CoursLoadAccounting
                 comboBoxes["Kafedr"].SelectionChanged += OtherKafedr_Click;
 
                 Button AddDiscip = GetButton();
-                AddDiscip.Click += AddDiscip_Click;
+                AddDiscip.Click += Discip_Click;
 
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
@@ -221,7 +241,7 @@ namespace CoursLoadAccounting
 
                 Button AddSpecial = GetButton();
 
-                AddSpecial.Click += AddSpecial_Click;
+                AddSpecial.Click += Special_Click;
 
                 addPanel.Children.Add(labels[0]);
                 addPanel.Children.Add(textBoxes[0]);
@@ -322,7 +342,7 @@ namespace CoursLoadAccounting
             int n = comboBoxes[getIdKey].Items.Count - 1;
             if (comboBoxes[getIdKey].SelectedIndex == n)
             {
-                AddWindow AddWindow = new AddWindow(nextWindow, databaseUniversity, "Добавление");
+                AddWindow AddWindow = new AddWindow(nextWindow, databaseUniversity);
                 AddWindow.ShowDialog();
 
                 databaseUniversity.Open();
@@ -353,7 +373,7 @@ namespace CoursLoadAccounting
             }
         }
 
-        private void AddFaculty_Click(object sender, RoutedEventArgs e)
+        private void Faculty_Click(object sender, RoutedEventArgs e)
         {           
             databaseUniversity.Open();
 
@@ -365,7 +385,12 @@ namespace CoursLoadAccounting
             {
                 try
                 {
-                    databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+                    if(idStr == -1)
+                        databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+                    else
+                        databaseUniversity.ExecuteNonQuery($"CALL update_faculty({idStr}, '{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+
+
                 }
                 catch (Exception ex)
                 {
@@ -381,13 +406,18 @@ namespace CoursLoadAccounting
             
         } 
 
-        private void AddMember_Click(object sender, RoutedEventArgs e)
+        private void Member_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
             try
             {
-                databaseUniversity.ExecuteNonQuery($"CALL add_departmentmember('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', '{textBoxes[4].Text.Trim()}', " +
+                if (idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_departmentmember('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', '{textBoxes[4].Text.Trim()}', " +
                                                                          $"'{textBoxes[2].Text.Trim()}', '{textBoxes[3].Text.Trim()}');");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_departmentmember({idStr}, '{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', '{textBoxes[4].Text.Trim()}', " +
+                                                                         $"'{textBoxes[2].Text.Trim()}', '{textBoxes[3].Text.Trim()}');");
+
                 this.Close();
             }
             catch (Exception ex )
@@ -399,13 +429,18 @@ namespace CoursLoadAccounting
 
         } 
 
-        private void AddKafedra_Click(object sender, RoutedEventArgs e)
+        private void Kafedra_Click(object sender, RoutedEventArgs e)
         {         
             databaseUniversity.Open();
             try
             {
-                databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text.Trim()}', " +
+                if (idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_kafedra('{textBoxes[0].Text.Trim()}', " +
                                                $"{getIdTable["Members"][comboBoxes["Members"].SelectedIndex]}, {getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]});");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_kafedra({idStr}, '{textBoxes[0].Text.Trim()}', " +
+                                              $"{getIdTable["Members"][comboBoxes["Members"].SelectedIndex]}, {getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]});");
+
                 this.Close();
             }
             catch (Exception ex)
@@ -415,13 +450,17 @@ namespace CoursLoadAccounting
             databaseUniversity.Close();
         } 
 
-        private void AddDiscip_Click(object sender, RoutedEventArgs e)
+        private void Discip_Click(object sender, RoutedEventArgs e)
         {
             databaseUniversity.Open();
 
             try
             {
-                databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+                if (idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline('{idStr}, {textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+
                 this.Close();
             }
             catch (Exception ex)
@@ -432,14 +471,19 @@ namespace CoursLoadAccounting
             databaseUniversity.Close();
         } 
 
-        private void AddSpecial_Click(object sender, RoutedEventArgs e) 
+        private void Special_Click(object sender, RoutedEventArgs e) 
         {
             databaseUniversity.Open();
 
             try
             {
-                databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
+                if (idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
                                                $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality('{idStr}, {textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
+                                              $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
+
                 this.Close();
             }
             catch (Exception ex)
@@ -450,7 +494,7 @@ namespace CoursLoadAccounting
             databaseUniversity.Close();          
         } 
 
-        private void AddUchet_Click(object sender, RoutedEventArgs e)
+        private void Uchet_Click(object sender, RoutedEventArgs e)
         {
             string lec = textBoxes[0].Text == "" ? "0" : textBoxes[0].Text;
             string prac = textBoxes[1].Text == "" ? "0" : textBoxes[1].Text;
@@ -463,14 +507,19 @@ namespace CoursLoadAccounting
             databaseUniversity.Open();
             try
             {
-                databaseUniversity.ExecuteNonQuery($"CALL add_discipline_speciality('{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
-                $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text.Trim()}, '{comboBoxes["Sessia"].SelectedIndex+1}', " +
-                $"{lec}, {prac}, {lab})");
+                if (idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_discipline_speciality('{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
+                    $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text.Trim()}, '{comboBoxes["Sessia"].SelectedIndex+1}', " +
+                    $"{lec}, {prac}, {lab})");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline_speciality({idStr}, '{getIdTable["Discip"][comboBoxes["Discip"].SelectedIndex]}', " +
+                    $"'{getIdTable["Special"][comboBoxes["Special"].SelectedIndex]}', {textBoxes[3].Text.Trim()}, '{comboBoxes["Sessia"].SelectedIndex + 1}', " +
+                    $"{lec}, {prac}, {lab})");
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+                MessageBox.Show(ex.ToString()/*.Message.Substring(6)*/, "Ошибка!");
             }
             
             databaseUniversity.Close();    
@@ -508,7 +557,10 @@ namespace CoursLoadAccounting
         {
             Button button = new Button();
 
-            button.Content = "Добавить";
+            if (idStr == -1)
+                button.Content = "Добавить";
+            else
+                button.Content = "Изменить";
 
             button.Margin = new Thickness(10, 0, 10, 10);
 

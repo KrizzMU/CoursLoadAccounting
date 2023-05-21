@@ -58,7 +58,7 @@ namespace CoursLoadAccounting
         {
             
             
-            AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity, "Добавление");
+            AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity);
             AddWindow.ShowDialog();
             AddWindow.Owner = this;
 
@@ -72,16 +72,23 @@ namespace CoursLoadAccounting
 
         private void DelButtom_Click(object sender, RoutedEventArgs e)
         {
-            if(TableDB.SelectedIndex > -1)
+            if (TableDB.SelectedIndex > -1)
             {
-                databaseUniversity.Delete(SelectTable.SelectedIndex, TableDB.SelectedIndex);
+                MessageBoxResult result = MessageBox.Show("Вы уверены что хотите удалить эту запись?", "Подтверждение", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    databaseUniversity.Delete(SelectTable.SelectedIndex, TableDB.SelectedIndex);
 
-                databaseUniversity.Open();
+                    databaseUniversity.Open();
 
-                TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
+                    TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
 
-                databaseUniversity.Close();
+                    databaseUniversity.Close();
+                }
+
             }
+            else
+                MessageBox.Show("Выберете строку!");
         }
 
         private void EditButtom_Click(object sender, RoutedEventArgs e)
@@ -89,10 +96,18 @@ namespace CoursLoadAccounting
             if (TableDB.SelectedIndex > -1)
             {
 
-                AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity, "Изменение");
+                AddWindow AddWindow = new AddWindow(SelectTable.SelectedIndex, databaseUniversity, TableDB.SelectedIndex);
                 AddWindow.ShowDialog();
                 AddWindow.Owner = this;
+
+                databaseUniversity.Open();
+
+                TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
+
+                databaseUniversity.Close();
             }
+            else
+                MessageBox.Show("Выберете строку!");
         }
     }
 }
