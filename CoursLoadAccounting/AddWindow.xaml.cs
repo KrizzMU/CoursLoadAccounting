@@ -459,7 +459,7 @@ namespace CoursLoadAccounting
                 if (idStr == -1)
                     databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
                 else
-                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline({idStr}, '{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline('{idStr}, {textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
 
                 this.Close();
             }
@@ -481,7 +481,7 @@ namespace CoursLoadAccounting
                     databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
                                                $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
                 else
-                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality({idStr}, '{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
+                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality('{idStr}, {textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
                                               $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
 
                 this.Close();
