@@ -47,7 +47,6 @@ BEGIN
     IF fname = '' THEN
       RAISE EXCEPTION 'Поле не должно быть пустым!';
     END IF;
-    NEW.name := regexp_replace(NEW.name, '^\w+', INITCAP(split_part(fname, ' ', 1)));
     RETURN NEW;
   END;
 END;
@@ -70,19 +69,20 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      NEW.name := regexp_replace(NEW.name, '^\w+', INITCAP(split_part(fname, ' ', 1)));
+      fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
     END IF;
+    NEW.name = fname;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 
 CREATE TRIGGER add_kafedra_trigger
 BEFORE INSERT ON Kafedra
 FOR EACH ROW
 EXECUTE FUNCTION validate_Kafedra();
+
 
 
 CREATE OR REPLACE FUNCTION validate_discipline()
@@ -95,11 +95,11 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      NEW.name := regexp_replace(NEW.name, '^\w+', INITCAP(split_part(fname, ' ', 1)));
+      fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
     END IF;
-    
+    NEW.name = fname;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -121,11 +121,11 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      NEW.name := regexp_replace(NEW.name, '^\w+', INITCAP(split_part(fname, ' ', 1)));
+      fname := INITCAP(fname);
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
     END IF;
-    
+    NEW.name = fname;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -153,45 +153,5 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER add_uchet_trigger
 BEFORE INSERT ON DisciplineSpeciality
-FOR EACH ROW
-EXECUTE FUNCTION validate_uchet();
-
-
------------------------------------------
-
---For Update
-
-CREATE TRIGGER update_member_trigger
-BEFORE UPDATE ON departmentmembers
-FOR EACH ROW
-EXECUTE FUNCTION validate_name();
-
-
-CREATE TRIGGER update_kafedra_trigger
-BEFORE UPDATE ON Kafedra
-FOR EACH ROW
-EXECUTE FUNCTION validate_Kafedra();
-
-
-CREATE TRIGGER update_faculty_trigger
-BEFORE UPDATE ON Faculty
-FOR EACH ROW
-EXECUTE FUNCTION validate_Faculty();
-
-
-CREATE TRIGGER update_discipline_trigger
-BEFORE UPDATE ON Discipline
-FOR EACH ROW
-EXECUTE FUNCTION validate_discipline();
-
-
-CREATE TRIGGER update_spec_trigger
-BEFORE UPDATE ON Speciality
-FOR EACH ROW
-EXECUTE FUNCTION validate_spec();
-
-
-CREATE TRIGGER update_uchet_trigger
-BEFORE UPDATE ON DisciplineSpeciality
 FOR EACH ROW
 EXECUTE FUNCTION validate_uchet();

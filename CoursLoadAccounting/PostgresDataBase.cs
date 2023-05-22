@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 
 namespace CoursLoadAccounting
 {
@@ -41,6 +42,17 @@ namespace CoursLoadAccounting
             [3] = "departmentmember",
             [4] = "discipline",
             [5] = "speciality"
+        };
+
+        private Dictionary<int, string> taskView = new Dictionary<int, string>()
+        {
+            [0] = "SubQueryFrom",
+            [1] = "SubQueryWhere",
+            [2] = "SubQueryCorrelated",
+            [3] = "QueryHaving",
+            [4] = "QueryAny",
+            [5] = "QueryAll",
+            [6] = "get_department_members_with_email()"
         };
 
         public PostgresDataBase(string userId, string password)
@@ -158,6 +170,17 @@ namespace CoursLoadAccounting
             }
 
             return idStr;
+        }
+
+        public DataTable GetTableForTask(int taskID)
+        {            
+            NpgsqlDataReader reader = ExecuteQuery($"SELECT * FROM {taskView[taskID]}");
+
+            var dataTable = new DataTable();
+
+            dataTable.Load(reader);
+
+            return dataTable;
         }
     }
 }

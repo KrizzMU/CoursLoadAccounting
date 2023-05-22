@@ -85,7 +85,7 @@ BEGIN
                       substr(phone_number, 10, 2);
     ELSE
       -- Если номер телефона неправильной длины, выбрасываем исключение
-      RAISE EXCEPTION 'Телефон введен неверно!';
+      RAISE EXCEPTION 'Invalid phone number';
     END IF;
 
     RETURN phone_number;
@@ -112,7 +112,7 @@ BEGIN
       RETURN femail;
     ELSE
       -- Если адрес электронной почты неправильного формата, выбрасываем исключение
-      RAISE EXCEPTION 'Почта введенна неверно!';
+      RAISE EXCEPTION 'Invalid email address';
     END IF;
   END;
 END;
@@ -221,3 +221,13 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION get_department_members_with_email()
+RETURNS TABLE (firstname VARCHAR(30), secondname VARCHAR(30), email VARCHAR(100))
+AS $$
+    SELECT firstname, secondname, email
+    FROM departmentmembers
+    WHERE email IS NOT NULL AND email != '';
+$$ LANGUAGE SQL;

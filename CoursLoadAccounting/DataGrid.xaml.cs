@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 
@@ -108,6 +109,15 @@ namespace CoursLoadAccounting
             }
             else
                 MessageBox.Show("Выберете строку!");
+        }
+
+        private void TasksButton_Click(object sender, RoutedEventArgs e)
+        {
+            Task task = new Task(databaseUniversity);
+            
+            task.Show();
+
+            this.Close();
         }
     }
 }
