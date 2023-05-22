@@ -85,7 +85,7 @@ BEGIN
                       substr(phone_number, 10, 2);
     ELSE
       -- Если номер телефона неправильной длины, выбрасываем исключение
-      RAISE EXCEPTION 'Invalid phone number';
+      RAISE EXCEPTION 'Телефон введен неверно!';
     END IF;
 
     RETURN phone_number;
@@ -112,7 +112,7 @@ BEGIN
       RETURN femail;
     ELSE
       -- Если адрес электронной почты неправильного формата, выбрасываем исключение
-      RAISE EXCEPTION 'Invalid email address';
+      RAISE EXCEPTION 'Почта введенна неверно!';
     END IF;
   END;
 END;
