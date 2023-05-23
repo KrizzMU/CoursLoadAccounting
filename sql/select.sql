@@ -179,7 +179,7 @@ HAVING AVG(ds.lecHour) >= (SELECT ROUND(AVG(lecHour), 2) FROM DisciplineSpeciali
 
 CREATE VIEW QueryAny
 AS
-SELECT name
+SELECT name, code
 FROM Speciality
 WHERE id = ANY (
     SELECT SpecialityID
@@ -189,4 +189,23 @@ WHERE id = ANY (
 
 -----------------------------
 
+
+CREATE VIEW QueryAll
+AS
+SELECT
+s.name as "Специальность",
+ds.lecHour,
+CASE
+	WHEN ds.sessia = 1 then 'Зачет'
+	WHEN ds.sessia = 2 then 'Экзамен'
+END as "Сессия"
+FROM DisciplineSpeciality ds
+JOIN Discipline d ON d.id = ds.DisciplineID
+JOIN Speciality s ON s.id = ds.SpecialityID
+WHERE ds.lecHour > ALL(
+	SELECT AVG(lecHour) FROM DisciplineSpeciality 
+)
+
+	
+	
 

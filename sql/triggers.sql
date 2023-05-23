@@ -47,6 +47,7 @@ BEGIN
     IF fname = '' THEN
       RAISE EXCEPTION 'Поле не должно быть пустым!';
     END IF;
+    NEW.name = regexp_replace(NEW.name, '^\w+', initcap(split_part(fname, ' ', 1)));
     RETURN NEW;
   END;
 END;
@@ -69,11 +70,10 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      fname := INITCAP(fname);
+      NEW.name = regexp_replace(NEW.name, '^\w+', initcap(split_part(fname, ' ', 1)));
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
     END IF;
-    NEW.name = fname;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -95,11 +95,10 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      fname := INITCAP(fname);
+      NEW.name = regexp_replace(NEW.name, '^\w+', initcap(split_part(fname, ' ', 1)));
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
-    END IF;
-    NEW.name = fname;
+    END IF;    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -121,11 +120,10 @@ BEGIN
     RAISE EXCEPTION 'Поле не должно быть пустым!';
   END IF;
   IF fname ~ '^[а-яА-ЯЁё\s-]+$' THEN
-      fname := INITCAP(fname);
+      NEW.name = regexp_replace(NEW.name, '^\w+', initcap(split_part(fname, ' ', 1)));
     ELSE    
       RAISE EXCEPTION 'Недопустимые символы!';
     END IF;
-    NEW.name = fname;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

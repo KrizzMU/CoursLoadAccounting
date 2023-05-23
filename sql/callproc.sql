@@ -9,9 +9,9 @@ CALL add_faculty('Компьютерных наук', 1);
 CALL add_faculty('Физический', 2);
 CALL add_faculty('Прикладной математики', 3);
 
-CALL add_kafedra('ИКБ-2', 4, 1);
-CALL add_kafedra('КОИС-1', 5, 2);
-CALL add_kafedra('КТК-1', 6, 3);
+CALL add_kafedra('Технической кибернетики', 4, 1);
+CALL add_kafedra('Радиотехники', 5, 2);
+CALL add_kafedra('Кибернетики', 6, 3);
 
 CALL add_speciality('Информационные системы и технологии', '09.03.02', 1);
 CALL add_speciality('Информационные системы и Вычислительная техника', '09.03.03', 1);
