@@ -28,8 +28,14 @@ CREATE OR REPLACE PROCEDURE update_departmentmember(
     IN p_middlename TEXT DEFAULT NULL,
     IN p_email TEXT DEFAULT NULL
 )
-LANGUAGE SQL
 AS $$
+BEGIN
+    p_phonenumber := format_phone_number(p_phonenumber);
+
+    IF CheckMembersPhone(p_id, p_phonenumber) THEN
+        RAISE EXCEPTION 'Данный номер уже занят!';
+    END IF;
+
     UPDATE departmentmembers
     SET firstname = p_firstname,
         secondname = p_secondname,
@@ -37,7 +43,8 @@ AS $$
         email = p_email,
         phonenumber = p_phonenumber
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_departmentmember(
     IN p_id INT
@@ -48,28 +55,42 @@ AS $$
     WHERE id = p_id;
 $$;
 
+----------------
+
 CREATE OR REPLACE PROCEDURE add_faculty(
     IN p_name TEXT,
     IN p_department_id INTEGER
 )
-LANGUAGE SQL
 AS $$
+BEGIN  
+    p_name = regexp_replace(p_name, '^\w+', initcap(split_part(p_name, ' ', 1)));
+    
+    IF CheckFaculty(p_name) THEN
+        RAISE EXCEPTION 'Данный факультет уже существует!';
+    END IF;
+
     INSERT INTO Faculty (name, departamentID)
     VALUES (p_name, p_department_id);
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE update_faculty(
     IN p_id INT,
     IN p_name TEXT,
     IN p_department_id INTEGER
 )
-LANGUAGE SQL
 AS $$
+BEGIN 
+    p_name = regexp_replace(p_name, '^\w+', initcap(split_part(p_name, ' ', 1)));
+    IF CheckFaculty(p_id, p_name) THEN
+        RAISE EXCEPTION 'Данный факультет уже существует!';
+    END IF;
     UPDATE Faculty
     SET name = p_name,
         departamentID = p_department_id
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_faculty(
     IN p_id INT
@@ -79,6 +100,9 @@ AS $$
     DELETE FROM Faculty
     WHERE id = p_id;
 $$;
+
+--------------------
+
 
 CREATE OR REPLACE PROCEDURE add_kafedra(
     IN p_name TEXT,
@@ -99,14 +123,16 @@ CREATE OR REPLACE PROCEDURE update_kafedra(
     IN p_department_id INTEGER,
     IN p_faculty_id INTEGER
 )
-LANGUAGE SQL
 AS $$
+BEGIN
+    p_name := CheckKafedra(p_id, p_name);
     UPDATE Kafedra
     SET name = p_name,
         departamentID = p_department_id,
         facultyID = p_faculty_id
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_kafedra(
     IN p_id INT
@@ -116,6 +142,8 @@ AS $$
     DELETE FROM Kafedra
     WHERE id = p_id;
 $$;
+
+-------------
 
 CREATE OR REPLACE PROCEDURE add_speciality(
     IN p_name TEXT,
@@ -137,14 +165,17 @@ CREATE OR REPLACE PROCEDURE update_speciality(
     IN p_code TEXT,
     IN p_faculty_id INTEGER
 )
-LANGUAGE SQL
 AS $$
+BEGIN
+    p_name := CheckNameSpec(p_id, p_name);
+    p_code := CheckCodeSpec(p_id, p_code);
     UPDATE Speciality
     SET name = p_name,
         code = p_code,
         facultyID = p_faculty_id
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_speciality(
     IN p_id INT
@@ -154,6 +185,9 @@ AS $$
     DELETE FROM Speciality
     WHERE id = p_id;
 $$;
+
+-------------
+
 
 CREATE OR REPLACE PROCEDURE add_discipline(
     IN p_name TEXT,
@@ -172,13 +206,15 @@ CREATE OR REPLACE PROCEDURE update_discipline(
     IN p_name TEXT,
     IN p_kafedra_id INTEGER
 )
-LANGUAGE SQL
 AS $$
+BEGIN
+    p_name := CheckDiscipline(p_id, p_name);
     UPDATE Discipline
     SET name = p_name,
         kafedraID = p_kafedra_id
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_discipline(
     IN p_id INT
@@ -188,6 +224,8 @@ AS $$
     DELETE FROM Discipline
     WHERE id = p_id;
 $$;
+
+-------------------
 
 CREATE OR REPLACE PROCEDURE add_discipline_speciality(
     IN p_discipline_id INTEGER,
@@ -216,8 +254,9 @@ CREATE OR REPLACE PROCEDURE update_discipline_speciality(
     IN p_prhours INTEGER DEFAULT NULL,
     IN p_labs INTEGER DEFAULT NULL
 )
-LANGUAGE SQL
 AS $$
+BEGIN
+    PERFORM CheckUchet(p_id, p_discipline_id, p_speciality_id);
     UPDATE DisciplineSpeciality
     SET DisciplineID = p_discipline_id,
         SpecialityID = p_speciality_id,
@@ -227,7 +266,8 @@ AS $$
         semestr = p_semestr,
         sessia = p_sessia
     WHERE id = p_id;
-$$;
+END
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE delete_discipline_speciality(
     IN p_id INT

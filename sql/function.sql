@@ -17,6 +17,28 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION CheckFaculty(
+    facultyID INT,
+    fname VARCHAR(50)
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM faculty 
+  WHERE name = fname;
+  
+  IF id_f IS NULL OR id_f = facultyID THEN
+    RETURN FALSE;
+  END IF;
+  
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION CheckMembersPhone(
     fphone VARCHAR(16)
 )
@@ -31,6 +53,27 @@ BEGIN
   IF id_f IS NULL THEN
     RETURN FALSE;
   END IF;
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION CheckMembersPhone(
+    memberID INT,
+    fphone VARCHAR(16)
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM departmentmembers
+  WHERE phonenumber = fphone;
+  
+  IF id_f IS NULL OR id_f = memberID THEN
+    RETURN FALSE;
+  END IF;
+  
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
@@ -56,6 +99,31 @@ BEGIN
     RETURN FALSE;
   END IF;
   	RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION CheckMembersmail(
+    memberID INT,
+    fmail VARCHAR(16)
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  IF fmail = '' THEN
+    RETURN FALSE;
+  END IF;
+  
+  SELECT 
+    id INTO id_f 
+  FROM departmentmembers
+  WHERE email = fmail;
+  
+  IF id_f IS NULL OR id_f = memberID THEN
+    RETURN FALSE;
+  END IF;
+  
+  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -137,6 +205,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION CheckKafedra(
+    kafedraID INT,
+    fname TEXT
+)
+RETURNS TEXT AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM Kafedra
+  WHERE name ILIKE fname;
+  
+  IF id_f IS NOT NULL AND id_f <> kafedraID THEN
+    RAISE EXCEPTION 'Данная кафедра уже есть!';
+  END IF;
+  
+  RETURN fname;
+END;
+$$ LANGUAGE plpgsql;
+
 
 
 CREATE OR REPLACE FUNCTION CheckDiscipline(
@@ -154,6 +243,27 @@ BEGIN
     RAISE EXCEPTION 'Данная дисциплина уже есть!';
   END IF;
   return fname;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION CheckDiscipline(
+    disciplineID INT,
+    fname TEXT
+)
+RETURNS TEXT AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM Discipline
+  WHERE name ILIKE fname;
+  
+  IF id_f IS NOT NULL AND id_f <> disciplineID THEN
+    RAISE EXCEPTION 'Данная дисциплина уже есть!';
+  END IF;
+  
+  RETURN fname;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -175,6 +285,28 @@ BEGIN
   return fname;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION CheckNameSpec(
+    specID INT,
+    fname TEXT
+)
+RETURNS TEXT AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM Speciality
+  WHERE name ILIKE fname;
+  
+  IF id_f IS NOT NULL AND id_f <> specID THEN
+    RAISE EXCEPTION 'Данная специальность уже существует!';
+  END IF;
+  
+  RETURN fname;
+END;
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION CheckCodeSpec(
     fcode TEXT
@@ -203,18 +335,48 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION CheckCodeSpec(
+    specID INT,
+    fcode TEXT
+)
+RETURNS TEXT AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+    id INTO id_f 
+  FROM Speciality
+  WHERE code ILIKE fcode;
+  
+  IF id_f IS NOT NULL AND id_f <> specID THEN
+    RAISE EXCEPTION 'Данный код уже существует!';
+  END IF;
+
+  fcode := regexp_replace(fcode, '[^0-9]', '', 'g');
+
+  IF length(fcode) = 6 THEN
+    fcode := substr(fcode, 1, 2) || '.' || substr(fcode, 3, 2) || '.' || substr(fcode, 5, 2);
+  ELSE
+    RAISE EXCEPTION 'Недопустимые значения в коде!';
+  END IF;
+
+  RETURN fcode;
+END;
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION CheckUchet(
     fDiscipline INT,
     fSpeciality INT
 )
+RETURNS VOID
 AS $$
 DECLARE
   id_f INT;
 BEGIN
   SELECT 
-  id INTO DisciplineSpeciality
-  FROM Speciality
+  id INTO id_f
+  FROM DisciplineSpeciality
   WHERE DisciplineID = fDiscipline AND SpecialityID = fSpeciality;
   IF id_f IS NOT NULL THEN
     RAISE EXCEPTION 'У данной специальности уже есть такая дисциплина!';
@@ -222,6 +384,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+CREATE OR REPLACE FUNCTION CheckUchet(
+    uchetID INT,
+    fDiscipline INT,
+    fSpeciality INT
+)
+RETURNS VOID
+AS $$
+DECLARE
+  id_f INT;
+BEGIN
+  SELECT 
+  id INTO id_f
+  FROM DisciplineSpeciality
+  WHERE DisciplineID = fDiscipline AND SpecialityID = fSpeciality;
+  IF id_f IS NOT NULL AND id_f <> uchetID THEN
+    RAISE EXCEPTION 'У данной специальности уже есть такая дисциплина!';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_department_members_with_email()

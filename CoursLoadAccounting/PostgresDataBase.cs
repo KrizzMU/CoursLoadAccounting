@@ -182,5 +182,16 @@ namespace CoursLoadAccounting
 
             return dataTable;
         }
+
+        public DataTable GetTableForScalarFunc(string phone)
+        {
+            NpgsqlDataReader reader = ExecuteQuery($"SELECT CASE WHEN CheckMembersPhone(format_phone_number('{phone}')) = true THEN 'Номер занят' ELSE 'Номер свободен' END as \"Состояние\"");
+
+            var dataTable = new DataTable();
+
+            dataTable.Load(reader);
+
+            return dataTable;
+        }
     }
 }

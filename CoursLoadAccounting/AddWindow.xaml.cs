@@ -377,28 +377,23 @@ namespace CoursLoadAccounting
         {           
             databaseUniversity.Open();
 
-            if ((bool)databaseUniversity.ExecuteScalar($"SELECT CheckFaculty('{textBoxes[0].Text.Trim()}')")) 
+            
+            try
             {
-                MessageBox.Show("Данный факультет уже существует!");
+                if(idStr == -1)
+                    databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+                else
+                    databaseUniversity.ExecuteNonQuery($"CALL update_faculty({idStr}, '{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
+
+
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    if(idStr == -1)
-                        databaseUniversity.ExecuteNonQuery($"CALL add_faculty('{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
-                    else
-                        databaseUniversity.ExecuteNonQuery($"CALL update_faculty({idStr}, '{textBoxes[0].Text.Trim()}', {getIdTable["Members"][comboBoxes["Members"].SelectedIndex]});");
-
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
-                }
-
-                this.Close();
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
             }
+
+            this.Close();
+            
             
 
             databaseUniversity.Close();
@@ -459,7 +454,7 @@ namespace CoursLoadAccounting
                 if (idStr == -1)
                     databaseUniversity.ExecuteNonQuery($"CALL add_discipline('{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
                 else
-                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline('{idStr}, {textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
+                    databaseUniversity.ExecuteNonQuery($"CALL update_discipline({idStr}, '{textBoxes[0].Text.Trim()}', {getIdTable["Kafedr"][comboBoxes["Kafedr"].SelectedIndex]})");
 
                 this.Close();
             }
@@ -481,7 +476,7 @@ namespace CoursLoadAccounting
                     databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
                                                $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
                 else
-                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality('{idStr}, {textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
+                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality({idStr}, '{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
                                               $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
 
                 this.Close();
@@ -519,7 +514,7 @@ namespace CoursLoadAccounting
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString()/*.Message.Substring(6)*/, "Ошибка!");
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
             }
             
             databaseUniversity.Close();    

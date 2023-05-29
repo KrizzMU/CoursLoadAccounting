@@ -45,5 +45,21 @@ namespace CoursLoadAccounting
 
             databaseUniversity.Close();
         }
+
+        private void CheckPhoneButton_Click(object sender, RoutedEventArgs e)
+        {
+            databaseUniversity.Open();
+
+            try
+            {
+                TableDB.ItemsSource = databaseUniversity.GetTableForScalarFunc(Phone.Text).DefaultView;  
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
+
+            databaseUniversity.Close();
+        }
     }
 }
