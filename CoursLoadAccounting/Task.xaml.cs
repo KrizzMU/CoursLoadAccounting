@@ -41,13 +41,14 @@ namespace CoursLoadAccounting
         {
             databaseUniversity.Open();
 
+
             TableDB.ItemsSource = databaseUniversity.GetTableForTask(SelectTable.SelectedIndex).DefaultView;
 
             databaseUniversity.Close();
         }
 
         private void CheckPhoneButton_Click(object sender, RoutedEventArgs e)
-        {
+        {        
             databaseUniversity.Open();
 
             try
@@ -61,5 +62,7 @@ namespace CoursLoadAccounting
 
             databaseUniversity.Close();
         }
+
+
     }
 }

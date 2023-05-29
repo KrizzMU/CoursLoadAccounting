@@ -469,15 +469,18 @@ namespace CoursLoadAccounting
         private void Special_Click(object sender, RoutedEventArgs e) 
         {
             databaseUniversity.Open();
-
+            //MessageBox.Show((string)comboBoxes["Faculty"].SelectedValue);
             try
             {
                 if (idStr == -1)
-                    databaseUniversity.ExecuteNonQuery($"CALL add_speciality('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
-                                               $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
+                    databaseUniversity.ExecuteNonQuery($"INSERT INTO Spec (\"Специальность\", \"Код\", \"Факультет\") " +
+                        $"VALUES ('{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', '{(string)comboBoxes["Faculty"].SelectedValue}');");
                 else
-                    databaseUniversity.ExecuteNonQuery($"CALL update_speciality({idStr}, '{textBoxes[0].Text.Trim()}', '{textBoxes[1].Text.Trim()}', " +
-                                              $"{getIdTable["Faculty"][comboBoxes["Faculty"].SelectedIndex]})");
+                {
+                    string code = (string)databaseUniversity.ExecuteScalar($"SELECT code FROM speciality WHERE id = {idStr}");
+                    databaseUniversity.ExecuteNonQuery($"UPDATE Spec SET \"Специальность\" = '{textBoxes[0].Text.Trim()}', \"Код\" = '{textBoxes[1].Text.Trim()}', \"Факультет\" = '{(string)comboBoxes["Faculty"].SelectedValue}'" +
+                        $" WHERE \"Код\" = '{code}';");
+                }                                   
 
                 this.Close();
             }

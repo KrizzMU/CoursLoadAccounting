@@ -78,13 +78,29 @@ namespace CoursLoadAccounting
                 MessageBoxResult result = MessageBox.Show("Вы уверены что хотите удалить эту запись?", "Подтверждение", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    databaseUniversity.Delete(SelectTable.SelectedIndex, TableDB.SelectedIndex);
+                    if (SelectTable.SelectedIndex == 5)
+                    {
+                        databaseUniversity.Open();
+
+                        int idtb = databaseUniversity.GetId(SelectTable.SelectedIndex, TableDB.SelectedIndex);
+
+                        string code = (string)databaseUniversity.ExecuteScalar($"SELECT code FROM speciality WHERE id = {idtb}");  
+                        
+                        databaseUniversity.ExecuteNonQuery($"DELETE FROM Spec WHERE \"Код\" = '{code}';");
+
+                        databaseUniversity.Close();
+                    }
+                    else
+                    {
+                        databaseUniversity.Delete(SelectTable.SelectedIndex, TableDB.SelectedIndex);                       
+                    }
 
                     databaseUniversity.Open();
 
                     TableDB.ItemsSource = databaseUniversity.GetTable(SelectTable.SelectedIndex).DefaultView;
 
                     databaseUniversity.Close();
+
                 }
 
             }

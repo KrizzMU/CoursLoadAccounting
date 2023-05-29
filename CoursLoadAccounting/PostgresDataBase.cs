@@ -52,7 +52,8 @@ namespace CoursLoadAccounting
             [3] = "QueryHaving",
             [4] = "QueryAny",
             [5] = "QueryAll",
-            [6] = "get_department_members_with_email()"
+            [6] = "get_department_members_with_email()",
+            [7] = "Spec"
         };
 
         public PostgresDataBase(string userId, string password)

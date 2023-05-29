@@ -64,7 +64,7 @@
                  Height="25" VerticalAlignment="Top"
                  HorizontalAlignment="Stretch" 
                   SelectionChanged="SelectTable_SelectionChanged"
-                 SelectedIndex="0">
+                 >
             <ComboBoxItem>FROM</ComboBoxItem>
             <ComboBoxItem>WHERE</ComboBoxItem>
             <ComboBoxItem>CORRELATED</ComboBoxItem>
@@ -81,10 +81,12 @@
 
         <TextBox x:Name="Phone" Grid.Column="5" Grid.Row="2" 
                  Height="30" Width="140"
-                 HorizontalAlignment="Left" Margin="6"/>
+                 HorizontalAlignment="Left" Margin="6"
+                 VerticalContentAlignment="Center"/>
 
         <Button x:Name="CheckPhoneButton" Grid.Column="5" Grid.Row="2" 
                 HorizontalAlignment="Right" Height="30" Width="40" 
                 Click="CheckPhoneButton_Click"/>
+        
     </Grid>
 </Window>
