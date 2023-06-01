@@ -194,5 +194,10 @@ namespace CoursLoadAccounting
 
             return dataTable;
         }
+
+        public void CursorSwap()
+        {
+            ExecuteNonQuery("SELECT swap_lec_pr_hours()");    
+        }
     }
 }

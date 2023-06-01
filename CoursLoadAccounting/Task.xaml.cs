@@ -63,6 +63,15 @@ namespace CoursLoadAccounting
             databaseUniversity.Close();
         }
 
+        private void CursorButton_Click(object sender, RoutedEventArgs e)
+        {
+            databaseUniversity.Open();
 
+            databaseUniversity.CursorSwap();
+
+            TableDB.ItemsSource = databaseUniversity.GetTable(0).DefaultView;
+
+            databaseUniversity.Close();
+        }
     }
 }

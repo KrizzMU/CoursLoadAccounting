@@ -156,3 +156,39 @@ CREATE TRIGGER add_uchet_trigger
 BEFORE INSERT ON DisciplineSpeciality
 FOR EACH ROW
 EXECUTE FUNCTION validate_uchet();
+
+
+CREATE TRIGGER update_member_trigger
+BEFORE UPDATE ON departmentmembers
+FOR EACH ROW
+EXECUTE FUNCTION validate_name();
+
+
+CREATE TRIGGER update_faculty_trigger
+BEFORE UPDATE ON Faculty
+FOR EACH ROW
+EXECUTE FUNCTION validate_Faculty();
+
+
+CREATE TRIGGER update_kafedra_trigger
+BEFORE UPDATE ON Kafedra
+FOR EACH ROW
+EXECUTE FUNCTION validate_Kafedra();
+
+
+CREATE TRIGGER update_discipline_trigger
+BEFORE UPDATE ON Discipline
+FOR EACH ROW
+EXECUTE FUNCTION validate_discipline();
+
+
+CREATE TRIGGER update_spec_trigger
+BEFORE UPDATE ON Speciality
+FOR EACH ROW
+EXECUTE FUNCTION validate_spec();
+
+
+CREATE TRIGGER update_uchet_trigger
+BEFORE UPDATE ON DisciplineSpeciality
+FOR EACH ROW
+EXECUTE FUNCTION validate_uchet();
