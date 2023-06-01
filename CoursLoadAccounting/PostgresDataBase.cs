@@ -199,5 +199,7 @@ namespace CoursLoadAccounting
         {
             ExecuteNonQuery("SELECT swap_lec_pr_hours()");    
         }
+
+        
     }
 }

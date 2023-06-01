@@ -73,5 +73,20 @@ namespace CoursLoadAccounting
 
             databaseUniversity.Close();
         }
+
+        private void TranzactionButton_Click(object sender, RoutedEventArgs e)
+        {
+            databaseUniversity.Open();
+            TableDB.ItemsSource = databaseUniversity.GetTable(2).DefaultView;
+            databaseUniversity.Close();
+
+            TranzactionInsert tranzactionInsert = new TranzactionInsert(databaseUniversity);
+
+            tranzactionInsert.ShowDialog();
+
+            databaseUniversity.Open();
+            TableDB.ItemsSource = databaseUniversity.GetTable(2).DefaultView;
+            databaseUniversity.Close();
+        }
     }
 }

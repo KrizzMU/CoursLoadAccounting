@@ -90,7 +90,10 @@
       
         <Button x:Name="CursorButton" Grid.Column="5" Grid.Row="3" 
                 Content="Курсор" HorizontalAlignment="Left" VerticalAlignment="Top"
-                Height="50" Width="85" Click="CursorButton_Click"/>
-
+                Height="50" Width="90" Click="CursorButton_Click"/>
+        
+        <Button x:Name="TranzactionButton" Grid.Column="5" Grid.Row="3" 
+                Content="Транзакция" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Height="50" Width="90" Click="TranzactionButton_Click"/>
     </Grid>
 </Window>
