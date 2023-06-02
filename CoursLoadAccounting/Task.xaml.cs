@@ -21,18 +21,23 @@ namespace CoursLoadAccounting
     {
         public PostgresDataBase databaseUniversity;       
 
-        public Task(PostgresDataBase postgresDataBase)
+        public Task(PostgresDataBase postgresDataBase, bool roleAdmin)
         {
             databaseUniversity = postgresDataBase;
             
             InitializeComponent();
 
+            if (!roleAdmin)
+            {
+                CursorButton.Visibility = Visibility.Hidden;
+                TranzactionButton.Visibility = Visibility.Hidden;
+            }
             
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            DataGrid dataGrid = new DataGrid(databaseUniversity);
+            DataGrid dataGrid = new DataGrid(databaseUniversity, true);
             dataGrid.Show();
             this.Close();
         }

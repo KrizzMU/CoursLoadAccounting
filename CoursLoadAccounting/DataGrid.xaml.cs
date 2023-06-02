@@ -26,11 +26,21 @@ namespace CoursLoadAccounting
     {
 
         public PostgresDataBase databaseUniversity;
-        public DataGrid(PostgresDataBase postgresDataBase)
+        bool roleAdmin;
+        public DataGrid(PostgresDataBase postgresDataBase, bool roleAdmin)
         {
             databaseUniversity = postgresDataBase;
+
             InitializeComponent();
-                
+
+            this.roleAdmin = roleAdmin;
+
+            if (!roleAdmin)
+            {
+                AddButtom.Visibility = Visibility.Hidden;
+                DeleteButtom.Visibility = Visibility.Hidden;
+                EditButtom.Visibility = Visibility.Hidden;
+            }
         }
 
        
@@ -129,7 +139,7 @@ namespace CoursLoadAccounting
 
         private void TasksButton_Click(object sender, RoutedEventArgs e)
         {
-            Task task = new Task(databaseUniversity);
+            Task task = new Task(databaseUniversity, roleAdmin);
             
             task.Show();
 

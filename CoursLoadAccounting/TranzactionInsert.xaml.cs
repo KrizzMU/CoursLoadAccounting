@@ -31,7 +31,9 @@ namespace CoursLoadAccounting
         {
             databaseUniversity.Open();
 
-            string tranzCommand = $"do $$ declare id_f int; begin CALL add_departmentmember('{FirstName.Text.Trim()}', '{SecondName.Text.Trim()}', '{Phone.Text.Trim()}', '{LastName.Text.Trim()}', '{Email.Text.Trim()}'); " +
+            databaseUniversity.Tranzaction(FirstName.Text.Trim(), SecondName.Text.Trim(), Phone.Text.Trim(), LastName.Text.Trim(), Email.Text.Trim(), Faculty.Text.Trim());
+
+            /*string tranzCommand = $"do $$ declare id_f int; begin CALL add_departmentmember('{FirstName.Text.Trim()}', '{SecondName.Text.Trim()}', '{Phone.Text.Trim()}', '{LastName.Text.Trim()}', '{Email.Text.Trim()}'); " +
                                   $"SELECT id INTO id_f FROM departmentmembers WHERE phonenumber = format_phone_number('{Phone.Text.Trim()}'); " +
                                   $"CALL add_faculty('{Faculty.Text.Trim()}', id_f); end; $$; commit;";
             try
@@ -42,7 +44,8 @@ namespace CoursLoadAccounting
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
-            }
+            }*/
+
             databaseUniversity.Close();
         }
     }

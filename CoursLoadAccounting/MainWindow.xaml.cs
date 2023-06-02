@@ -37,12 +37,17 @@ namespace CoursLoadAccounting
 
         private void logConnect_Click(object sender, RoutedEventArgs e)
         {
-            databaseUniversity = new PostgresDataBase(/*logLogin.Text, logPassword.Password*/ "postgres", "Alan123231");
+            databaseUniversity = new PostgresDataBase(logLogin.Text, logPassword.Password /*"postgres", "Alan123231"*/);
             try
             {    
                 databaseUniversity.Open();
+
+                bool roleAdmin = (bool)databaseUniversity.ExecuteScalar($"SELECT rolsuper FROM pg_roles WHERE rolname = '{logLogin.Text}'");
+
                 databaseUniversity.Close();
-                DataGrid dataGrid = new DataGrid(databaseUniversity);                
+
+                DataGrid dataGrid = new DataGrid(databaseUniversity, roleAdmin);    
+                
                 dataGrid.Show();
                 
                 this.Close();

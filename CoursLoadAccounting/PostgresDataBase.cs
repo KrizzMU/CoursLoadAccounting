@@ -200,6 +200,22 @@ namespace CoursLoadAccounting
             ExecuteNonQuery("SELECT swap_lec_pr_hours()");    
         }
 
+        public void Tranzaction(string firstName, string secondName, string phone, string lastName, string email, string faculty)
+        {
+            string tranzCommand = $"do $$ declare id_f int; begin CALL add_departmentmember('{firstName}', '{secondName}', '{phone}', '{lastName}', '{email}'); " +
+                                  $"SELECT id INTO id_f FROM departmentmembers WHERE phonenumber = format_phone_number('{phone}'); " +
+                                  $"CALL add_faculty('{faculty}', id_f); end; $$; commit;";
+            try
+            {
+                ExecuteNonQuery(tranzCommand);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
+            }
+        }
+
         
     }
 }

@@ -108,6 +108,7 @@
                 VerticalAlignment="Center" HorizontalAlignment="Left"
                 Click="TasksButton_Click"/>
 
+        
     </Grid>
 
 </Window>
