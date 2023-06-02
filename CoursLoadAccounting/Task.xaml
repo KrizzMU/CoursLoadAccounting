@@ -74,6 +74,11 @@
             <ComboBoxItem>Векторная функция</ComboBoxItem>
         </ComboBox>
 
+        <Label Grid.Column="5" Grid.Row="1" 
+               HorizontalAlignment="Left"
+               VerticalAlignment="Bottom"  
+               Content="Скалярная функция" FontSize="18"/>
+        
         <Label Grid.Column="5" Grid.Row="2" 
                HorizontalAlignment="Left"
                VerticalAlignment="Top" Height="30" Width="150"
