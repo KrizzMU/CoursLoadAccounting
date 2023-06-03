@@ -367,7 +367,7 @@ namespace CoursLoadAccounting
                     }
                 }
                 else
-                    comboBoxes[getIdKey].SelectedIndex = 0;
+                    comboBoxes[getIdKey].SelectedIndex = -1;
 
                 databaseUniversity.Close();
             }
