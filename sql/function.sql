@@ -8,7 +8,7 @@ BEGIN
   SELECT 
   id INTO id_f 
   FROM faculty 
-  WHERE name = fname;
+  WHERE name ILIKE fname;
   IF id_f IS NULL THEN
     RETURN FALSE;
   END IF;
