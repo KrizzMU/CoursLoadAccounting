@@ -133,14 +133,11 @@ CREATE OR REPLACE FUNCTION format_phone_number(
 )
   RETURNS CHAR(50) AS $$
 BEGIN
-  -- Получение введенного номера телефона
   DECLARE
     phone_number TEXT;
   BEGIN
-    -- Удаление всех символов, кроме цифр
     phone_number := regexp_replace(fphone, '[^0-9]', '', 'g');
 
-    -- Проверка и исправление длины номера телефона
     IF length(phone_number) = 10 THEN
       phone_number := '+7 ' || substr(phone_number, 1, 3) || ' ' ||
                       substr(phone_number, 4, 3) || ' ' ||
@@ -152,7 +149,7 @@ BEGIN
                       substr(phone_number, 8, 2) || ' ' ||
                       substr(phone_number, 10, 2);
     ELSE
-      -- Если номер телефона неправильной длины, выбрасываем исключение
+
       RAISE EXCEPTION 'Invalid phone number';
     END IF;
 
@@ -167,19 +164,18 @@ CREATE OR REPLACE FUNCTION validate_email(
 )
   RETURNS VARCHAR(30) AS $$
 BEGIN
-  -- Получение введенного адреса электронной почты
+
   DECLARE
     email_address TEXT := femail;
   BEGIN
-    -- Проверка и исправление формата адреса электронной почты
+
     IF femail = '' THEN
         RETURN femail;
 	END IF;
     IF email_address ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' THEN
-      -- Адрес электронной почты в правильном формате
+
       RETURN femail;
     ELSE
-      -- Если адрес электронной почты неправильного формата, выбрасываем исключение
       RAISE EXCEPTION 'Invalid email address';
     END IF;
   END;
@@ -409,7 +405,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION get_department_members_with_email()
 RETURNS TABLE (firstname VARCHAR(30), secondname VARCHAR(30), email VARCHAR(100))
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT firstname, secondname, email
     FROM departmentmembers
     WHERE email IS NOT NULL AND email != '';
+END;
 $$ LANGUAGE SQL;
