@@ -67,7 +67,9 @@
                  >
             <ComboBoxItem>FROM</ComboBoxItem>
             <ComboBoxItem>WHERE</ComboBoxItem>
-            <ComboBoxItem>CORRELATED</ComboBoxItem>
+            <ComboBoxItem>CORRELATED(1)</ComboBoxItem>
+            <ComboBoxItem>CORRELATED(2)</ComboBoxItem>
+            <ComboBoxItem>CORRELATED(3)</ComboBoxItem>
             <ComboBoxItem>HAVING</ComboBoxItem>
             <ComboBoxItem>ANY</ComboBoxItem>
             <ComboBoxItem>ALL</ComboBoxItem>

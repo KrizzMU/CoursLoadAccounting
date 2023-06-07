@@ -159,6 +159,37 @@ WHERE EXISTS (
     WHERE k.departamentID = dm.id  
 );
 
+-------------------------
+
+CREATE VIEW CorrelatedDiscipline AS
+SELECT d.name
+FROM discipline d
+WHERE EXISTS (
+    SELECT 1
+    FROM disciplineSpeciality ds
+    WHERE ds.disciplineID = d.id
+    AND ds.lecHour > 0
+    AND ds.prHour > 0
+);
+
+-------------------------
+
+CREATE VIEW CorrelatedMember AS
+SELECT dm.firstname, dm.secondname
+FROM departmentmembers dm
+WHERE (
+    SELECT SUM(ds.prHour)
+    FROM disciplineSpeciality ds
+    JOIN discipline d ON ds.DisciplineID = d.id
+    JOIN kafedra k ON d.kafedraID = k.id
+    WHERE k.departamentID = dm.id
+) < (
+    SELECT SUM(ds.lecHour)
+    FROM disciplineSpeciality ds
+    JOIN discipline d ON ds.DisciplineID = d.id
+    JOIN kafedra k ON d.kafedraID = k.id
+    WHERE k.departamentID = dm.id
+);
 
 -------------------------
 

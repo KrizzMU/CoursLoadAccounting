@@ -34,6 +34,8 @@ namespace CoursLoadAccounting
             databaseUniversity.Tranzaction(FirstName.Text.Trim(), SecondName.Text.Trim(), Phone.Text.Trim(), LastName.Text.Trim(), Email.Text.Trim(), Faculty.Text.Trim());
 
             databaseUniversity.Close();
+
+            this.Close();
         }
     }
 }

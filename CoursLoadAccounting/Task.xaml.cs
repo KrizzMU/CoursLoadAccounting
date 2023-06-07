@@ -46,7 +46,6 @@ namespace CoursLoadAccounting
         {
             databaseUniversity.Open();
 
-
             TableDB.ItemsSource = databaseUniversity.GetTableForTask(SelectTable.SelectedIndex).DefaultView;
 
             databaseUniversity.Close();

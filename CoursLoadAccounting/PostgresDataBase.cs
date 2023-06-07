@@ -49,11 +49,13 @@ namespace CoursLoadAccounting
             [0] = "SubQueryFrom",
             [1] = "SubQueryWhere",
             [2] = "SubQueryCorrelated",
-            [3] = "QueryHaving",
-            [4] = "QueryAny",
-            [5] = "QueryAll",
-            [6] = "get_department_members_with_email()",
-            [7] = "Spec"
+            [3] = "CorrelatedDiscipline",
+            [4] = "CorrelatedMember",
+            [5] = "QueryHaving",
+            [6] = "QueryAny",
+            [7] = "QueryAll",
+            [8] = "get_department_members_with_email()",
+            [9] = "Spec"
         };
 
         public PostgresDataBase(string userId, string password)
@@ -202,9 +204,9 @@ namespace CoursLoadAccounting
 
         public void Tranzaction(string firstName, string secondName, string phone, string lastName, string email, string faculty)
         {
-            string tranzCommand = $"do $$ declare id_f int; begin CALL add_departmentmember('{firstName}', '{secondName}', '{phone}', '{lastName}', '{email}'); " +
-                                  $"SELECT id INTO id_f FROM departmentmembers WHERE phonenumber = format_phone_number('{phone}'); " +
-                                  $"CALL add_faculty('{faculty}', id_f); end; $$; commit;";
+            
+            string tranzCommand = $"CALL add_facultymember('{firstName}', '{secondName}', '{phone}', '{faculty}', '{lastName}', '{email}')";
+
             try
             {
                 ExecuteNonQuery(tranzCommand);
@@ -214,8 +216,6 @@ namespace CoursLoadAccounting
             {
                 MessageBox.Show(ex.Message.Substring(6), "Ошибка!");
             }
-        }
-
-        
+        }    
     }
 }
