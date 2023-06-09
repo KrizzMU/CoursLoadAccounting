@@ -113,19 +113,23 @@ JOIN Faculty f ON s.facultyID = f.id
 
 ------------------------
 
-CREATE VIEW SubQueryFrom
-AS
-SELECT 
-dm.firstname, 
-dm.secondname, 
-f.name AS faculty_name,
-dm.email
-FROM (
-    SELECT *
-    FROM departmentmembers
-    WHERE email LIKE '%mail.ru'
-) AS dm
-JOIN Faculty AS f ON f.departamentID = dm.id
+CREATE VIEW SubQueryFrom AS
+SELECT k.name AS kafedra, sb.speciality_count
+FROM Kafedra k
+JOIN (
+    SELECT  d.kafedraID, COUNT(DISTINCT ds.SpecialityID) AS speciality_count
+    FROM (
+        SELECT *
+        FROM Discipline
+        WHERE id IN (
+            SELECT DisciplineID
+            FROM DisciplineSpeciality           
+        )
+    ) d
+    JOIN DisciplineSpeciality ds ON d.id = ds.DisciplineID
+	WHERE ds.lecHour > 50
+    GROUP BY d.kafedraID
+) sb ON k.id = sb.kafedraID;
 
 ------------------------
 
